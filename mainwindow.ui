@@ -23,7 +23,10 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Расчет МЦХ</string>
+   <string>РАСЧЕТ МЦХ</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="accessories-calculator"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -55,48 +58,7 @@
      </spacer>
     </item>
     <item row="1" column="0" colspan="3">
-     <widget class="QTableWidget" name="tableWidget">
-      <row>
-       <property name="text">
-        <string>1</string>
-       </property>
-      </row>
-      <column>
-       <property name="text">
-        <string>способ расчета</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>масса</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>плотность</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>центр масс</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>New Column</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>стиль штриховки</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>угол штриховки</string>
-       </property>
-      </column>
-     </widget>
+     <widget class="QTableView" name="tableView"/>
     </item>
    </layout>
   </widget>
