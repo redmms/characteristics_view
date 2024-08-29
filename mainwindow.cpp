@@ -1,22 +1,28 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QList>
-#include <QStandardItem> //?
-#include "paramdialog.h"
+#include "controllerdialog.h"
+#include <QStandardItemModel>
+#include <QStandardItem> //? Are this Items defined in QStandardItemModel for sure, or it is better to insure Items are included?
+#include <QList>  // same question: QList SHOULD be defined in QStringList or not?
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , model(new QStandardItemModel(0, 7, this))
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow),
+    model(new QStandardItemModel(0, 7, this))
 {
     ui->setupUi(this);
-    model->setHeaderData(0, Qt::Horizontal, "способ рассчета", Qt::DisplayRole);
-    model->setHeaderData(1, Qt::Horizontal, "масса", Qt::DisplayRole);
-    model->setHeaderData(2, Qt::Horizontal, "плотность", Qt::DisplayRole);
-    model->setHeaderData(3, Qt::Horizontal, "центр масс", Qt::DisplayRole);
-    model->setHeaderData(4, Qt::Horizontal, "материал", Qt::DisplayRole);
-    model->setHeaderData(5, Qt::Horizontal, "стиль штриховки", Qt::DisplayRole);
-    model->setHeaderData(6, Qt::Horizontal, "угол штриховки", Qt::DisplayRole);
+    QList<QString> headers{  // instead of QStringList to avoid extra include
+        "способ рассчета",
+        "масса",
+        "плотность",
+        "центр масс",
+        "материал",
+        "стиль штриховки",
+        "угол штриховки"
+    };
+    for (int i = 0; i < headers.size(); ++i) {
+        model->setHeaderData(i, Qt::Horizontal, headers[i], Qt::DisplayRole);
+    }
     ui->tableView->setModel(model);
     ui->tableView->resizeColumnsToContents();
 }
@@ -28,18 +34,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_addLineButton_clicked()
 {
-    ParamDialog dialog(this);
-    if(dialog.exec()){
-        QList<QStandardItem*> new_row = dialog.getInsertedLine(); // should the dialog be made modal in qt designer?
-        model->insertRow(model->rowCount(), new_row);
+    ControllerDialog controller(this);
+    if(controller.exec()){
+        QList<QStandardItem*> new_row = controller.getInsertedLine(); // should the dialog be made modal in qt designer (property "windowModality")?
+        int insert_idx = ui->tableView->currentIndex().row() + 1;
+        if (!insert_idx){
+            insert_idx = model->rowCount();
+            // this is only for adding order if no row is selected by user
+            // this way we always add it to the end of the table instead of
+            // beggining
+        }
+        model->insertRow(insert_idx, new_row);
         ui->tableView->resizeColumnsToContents();
     }
 }
-
 
 void MainWindow::on_deleteLineButton_clicked()
 {
     int index = ui->tableView->currentIndex().row();
     model->removeRow(index); // Do we need to check if the element exists?
 }
-

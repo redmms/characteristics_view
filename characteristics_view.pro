@@ -9,17 +9,17 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    controllerdialog.cpp \
     main.cpp \
-    mainwindow.cpp \
-    paramdialog.cpp
+    mainwindow.cpp
 
 HEADERS += \
-    mainwindow.h \
-    paramdialog.h
+    controllerdialog.h \
+    mainwindow.h
 
 FORMS += \
-    mainwindow.ui \
-    paramdialog.ui
+    controllerdialog.ui \
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

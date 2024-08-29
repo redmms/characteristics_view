@@ -1,17 +1,16 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
+#pragma once // is it Ok in Qt programming to replace those defines by #pragma once?
 #include <QMainWindow>
-#include <QStandardItemModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class QStandardItemModel;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    QStandardItemModel* model;
+    Ui::MainWindow* ui;
+    QStandardItemModel* model; // is this style Ok?
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -20,8 +19,4 @@ public:
 private slots:
     void on_addLineButton_clicked();
     void on_deleteLineButton_clicked();
-
-private:
-    Ui::MainWindow *ui;
 };
-#endif // MAINWINDOW_H
