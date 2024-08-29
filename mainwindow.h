@@ -11,7 +11,6 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
     QStandardItemModel* model;
 
 public:
@@ -20,7 +19,6 @@ public:
 
 private slots:
     void on_addLineButton_clicked();
-
     void on_deleteLineButton_clicked();
 
 private:

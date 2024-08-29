@@ -7,7 +7,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , model(new QStandardItemModel(this))
+    , model(new QStandardItemModel(0, 7, this))
 {
     ui->setupUi(this);
     model->setHeaderData(0, Qt::Horizontal, "способ рассчета", Qt::DisplayRole);
@@ -17,9 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     model->setHeaderData(4, Qt::Horizontal, "материал", Qt::DisplayRole);
     model->setHeaderData(5, Qt::Horizontal, "стиль штриховки", Qt::DisplayRole);
     model->setHeaderData(6, Qt::Horizontal, "угол штриховки", Qt::DisplayRole);
-
-
     ui->tableView->setModel(model);
+    ui->tableView->resizeColumnsToContents();
 }
 
 MainWindow::~MainWindow()
@@ -33,6 +32,7 @@ void MainWindow::on_addLineButton_clicked()
     if(dialog.exec()){
         QList<QStandardItem*> new_row = dialog.getInsertedLine(); // should the dialog be made modal in qt designer?
         model->insertRow(model->rowCount(), new_row);
+        ui->tableView->resizeColumnsToContents();
     }
 }
 
@@ -40,7 +40,6 @@ void MainWindow::on_addLineButton_clicked()
 void MainWindow::on_deleteLineButton_clicked()
 {
     int index = ui->tableView->currentIndex().row();
-    int debug_count = model->rowCount(); // don't forget
     model->removeRow(index); // Do we need to check if the element exists?
 }
 

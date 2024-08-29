@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/window_icons">
+        <file>icons/window_icons/appicon.png</file>
+    </qresource>
+    <qresource prefix="/methodbox_icons">
+        <file>icons/methodbox_icons/calc_1.png</file>
+        <file>icons/methodbox_icons/calc_2.png</file>
+        <file>icons/methodbox_icons/calc_3.png</file>
+    </qresource>
+    <qresource prefix="/linestylebox_icons">
+        <file>icons/linestylebox_icons/hatch_1.png</file>
+        <file>icons/linestylebox_icons/hatch_2.png</file>
+        <file>icons/linestylebox_icons/hatch_3.png</file>
+        <file>icons/linestylebox_icons/hatch_4.png</file>
+        <file>icons/linestylebox_icons/hatch_5.png</file>
+        <file>icons/linestylebox_icons/hatch_6.png</file>
+    </qresource>
+</RCC>

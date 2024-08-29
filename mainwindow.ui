@@ -6,27 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>740</width>
-    <height>453</height>
+    <width>767</width>
+    <height>402</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>740</width>
-    <height>453</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>740</width>
-    <height>453</height>
+    <width>509</width>
+    <height>222</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>РАСЧЕТ МЦХ</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="accessories-calculator"/>
+   <iconset resource="media.qrc">
+    <normaloff>:/icons/icons/appicon.png</normaloff>:/icons/icons/appicon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -67,13 +62,15 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>740</width>
+     <width>767</width>
      <height>26</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="media.qrc"/>
+ </resources>
  <connections/>
 </ui>
