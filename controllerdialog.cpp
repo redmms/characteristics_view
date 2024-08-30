@@ -3,6 +3,7 @@
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
 #include <QStandardItem>
+#include <QMessageBox>
 #include <list>
 
 ControllerDialog::ControllerDialog(QWidget *parent) :
@@ -47,31 +48,51 @@ void ControllerDialog::on_applyButton_clicked()
     QString material = ui->materialEdit->text();
     QString style = ui->styleBox->currentText();
     QString angle = ui->angleEdit->text();
-    switch(modenum(ui->methodBox->currentIndex())){
+    switch(Modenum(ui->methodBox->currentIndex())){
     case massMode:
-        density = "";
+        density = "x";
+        if (!ui->coordBox->isChecked()){
+            center = "0,0,0";
+        }
         break;
     case densityMode:
-        mass = "";
-        center = "";
+        mass = "x";
+        center = "x";
         break;
     case copyMode:
-        center = "";
+        center = "x";
         break;
-    }
+    }  
     for (const QString& column_name : {method, mass, density, center, material,
         style, angle}){
-        insertedLine.push_back(new QStandardItem(column_name));
+        if (column_name == ""){
+            QMessageBox msg_box;
+            msg_box.setWindowTitle("Пустые значения");
+            msg_box.setText("Не все данные заполнены. Всё равно продолжить?");
+            msg_box.setIcon(QMessageBox::Warning);
+            msg_box.addButton("Продолжить", QMessageBox::AcceptRole);
+            msg_box.addButton("Заполнить", QMessageBox::RejectRole);
+            if (msg_box.exec()){
+                insertedLine.clear();
+                return;
+            }
+        }
+        if (column_name == "x"){
+            insertedLine.push_back(new QStandardItem(""));
+        }
+        else{
+            insertedLine.push_back(new QStandardItem(column_name));
+        }
     }
     accept();
 }
 
 void ControllerDialog::on_methodBox_currentIndexChanged(int index)
 {    
-    changeMode(modenum(index));
+    changeMode(Modenum(index));
 }
 
-void ControllerDialog::changeMode(modenum mode)
+void ControllerDialog::changeMode(Modenum mode)
 {
     std::list<QWidget*> hideptrs, showptrs, enableptrs, disableptrs;
     switch(mode){
@@ -108,4 +129,3 @@ void ControllerDialog::changeMode(modenum mode)
         uiptr->setText("0");
     }
 }
-

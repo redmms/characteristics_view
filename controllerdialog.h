@@ -2,7 +2,7 @@
 #include <QDialog>
 #include <QList>
 
-enum modenum{
+enum Modenum{
     massMode,
     densityMode,
     copyMode
@@ -19,7 +19,7 @@ private:
     Ui::ParamDialog *ui;
     QList<QStandardItem*> insertedLine;
     QRegularExpressionValidator* validator;
-    void changeMode(modenum mode);
+    void changeMode(Modenum mode);
 
 public:
     explicit ControllerDialog(QWidget *parent = nullptr);
