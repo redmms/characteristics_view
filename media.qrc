@@ -9,6 +9,6 @@
         <file>icons/stylebox_icons/hatch_4.png</file>
         <file>icons/stylebox_icons/hatch_5.png</file>
         <file>icons/stylebox_icons/hatch_6.png</file>
-        <file>icons/window_icons/appicon.png</file>
+        <file>icons/window_icons/mainwindow_icon.png</file>
     </qresource>
 </RCC>

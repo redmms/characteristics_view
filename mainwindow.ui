@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>767</width>
-    <height>402</height>
+    <width>787</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="media.qrc">
-    <normaloff>:/icons/window_icons/appicon.png</normaloff>:/icons/window_icons/appicon.png</iconset>
+    <normaloff>:/icons/window_icons/mainwindow_icon.png</normaloff>:/icons/window_icons/mainwindow_icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -53,7 +53,14 @@
      </spacer>
     </item>
     <item row="1" column="0" colspan="3">
-     <widget class="QTableView" name="tableView"/>
+     <widget class="QTableView" name="tableView">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="sortingEnabled">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -62,8 +69,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>767</width>
-     <height>26</height>
+     <width>787</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>
