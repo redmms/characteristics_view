@@ -26,8 +26,8 @@
    <string>ПАРАМЕТРЫ МЦХ</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="x-office-document">
-    <normaloff>.</normaloff>.</iconset>
+   <iconset resource="media.qrc">
+    <normaloff>:/icons/window_icons/mainwindow_icon.png</normaloff>:/icons/window_icons/mainwindow_icon.png</iconset>
   </property>
   <property name="inputMethodHints">
    <set>Qt::ImhNone</set>

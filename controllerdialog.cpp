@@ -13,8 +13,6 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     validator(new QRegularExpressionValidator(QRegularExpression("[0-9]*"), this))
 {
     ui->setupUi(this);
-    setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
-            Qt::WindowCloseButtonHint);
     for (auto uiptr : {ui->massEdit, ui->xEdit, ui->yEdit, ui->zEdit,
             ui->angleEdit, ui->densityEdit}){
         uiptr->setValidator(validator);
