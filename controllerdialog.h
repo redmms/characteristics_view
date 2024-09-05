@@ -1,25 +1,28 @@
 #pragma once
+#include "mode.h"
 #include <QDialog>
 #include <QList>
+// #include <Detail>
 
 enum Modenum{
-    massMode,
-    densityMode,
-    copyMode
+    mass_mode,
+    density_mode,
+    copy_mode
 };
 
-namespace Ui { class ParamDialog; }
+namespace Ui { class ControllerDialog; }
 class QStandardItem;
 class QRegularExpressionValidator;
+class Mode;
 class ControllerDialog : public QDialog
 {
     Q_OBJECT
-
 private:
-    Ui::ParamDialog *ui;
+    Ui::ControllerDialog *ui;
     QList<QStandardItem*> insertedLine;
     QRegularExpressionValidator* validator;
-    void changeMode(Modenum mode);
+    std::unordered_map<Modenum, Mode*> modes;
+    Modenum current_mode;
 
 public:
     explicit ControllerDialog(QWidget *parent = nullptr);

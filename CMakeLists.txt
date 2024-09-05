@@ -20,6 +20,8 @@ set(PROJECT_SOURCES
         controllerdialog.cpp
         controllerdialog.h
         controllerdialog.ui
+        mode.h
+        mode.cpp
         media.qrc
         appicon.rc
 )

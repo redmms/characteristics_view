@@ -5,6 +5,7 @@
 #include <QStandardItem>
 #include <QList>
 #include <QSettings>
+#include <QItemSelection>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     readSettings();
     QList<QString> headers{  // instead of QStringList to avoid extra include
-        "способ рассчета",
+        "способ рассчета", // please, add translations for these phrazes
         "масса",
         "плотность",
         "центр масс",
@@ -27,6 +28,10 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     ui->tableView->setModel(model);
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    // Connect custom slots
+    connect(ui->tableView->selectionModel(), &QItemSelectionModel::selectionChanged,
+            this, &MainWindow::onSelectionChanged);
 
 }
 
@@ -68,7 +73,13 @@ void MainWindow::on_addLineButton_clicked()
 void MainWindow::on_deleteLineButton_clicked()
 {
     int index = ui->tableView->currentIndex().row();
-    if (index > 0 && index < model->rowCount()){
+    if (index >= 0 && index < model->rowCount()){
         model->removeRow(index);
     }
+}
+
+void MainWindow::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    QModelIndexList indexes = selected.indexes();
+    ui->deleteLineButton->setEnabled(!indexes.isEmpty());
 }
