@@ -81,7 +81,6 @@ void ControllerDialog::on_applyButton_clicked()
     QMap<QString, QString> input;
     modes[current_mode]->getText(input);
 
-    // Here you need to add conversion into Detail class:
     // initialize with this QStrings converted, or
     // make Detail object and assign/set its members
     // Those column names (left parts of assigning)
