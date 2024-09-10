@@ -29,6 +29,11 @@ QString Material::getName()
     return name;
 }
 
+QString Material::getShortName()
+{
+    return short_name;
+}
+
 HatchStyleNum Material::getStyle()
 {
     return hatch_style;

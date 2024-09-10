@@ -22,6 +22,7 @@ public:
     Material(const Material& other);
 
     QString getName();
+    QString getShortName();
     HatchStyleNum getStyle();
     int getAngle();
     QIcon getStyleIcon();  //

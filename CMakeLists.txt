@@ -20,8 +20,8 @@ set(PROJECT_SOURCES
         controllerdialog.cpp
         controllerdialog.h
         controllerdialog.ui
-        detailmode.h
-        detailmode.cpp
+        fillmode.h
+        fillmode.cpp
         detailitem.h
         detailitem.cpp
         material.h

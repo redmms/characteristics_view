@@ -70,8 +70,11 @@ void MainWindow::on_addLineButton_clicked()
             // (appending wouldn't need it)
         }
         model->insertRow(insert_idx, new_row);
-        new_row->setMaterialName("I'm back!!!!!!");
-        new_row->setCenter({99999, 126789, 21234});
+
+        // Чтобы проверить работу с DetailItem по указателю добавьте
+        // следующие строчки после добавления детали в модель:
+//        new_row->setMaterialName("I'm_back Excluded part Bla Bla Bla");
+//        new_row->setCenter({99999, 126789, 21234});
     }
 }
 

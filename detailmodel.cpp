@@ -74,6 +74,7 @@ void DetailModel::insertRow(int row, DetailItem *detail) // should we
     beginInsertRows(QModelIndex(), row, row); // by-one error?
     details.insert(details.begin() + row, detail);
     endInsertRows();
+  //  detail->setParent(this);
 }
 
 bool DetailModel::removeRow(int row)

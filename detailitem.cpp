@@ -171,7 +171,7 @@ QString DetailItem::centerToString()
         QString x = QString::number(int(mass_center.x()));
         QString y = QString::number(int(mass_center.y()));
         QString z = QString::number(int(mass_center.z()));
-        result = x + "," + y + "," + z;
+        result = x + ", " + y + ", " + z;
     }
     return result;
 }

@@ -24,7 +24,7 @@ public:
     virtual void connectDetailSignal(DetailItem* detail) = 0;
 
 protected slots:
-    virtual void findChangedIndex()
+    void findChangedIndex()
     {
         DetailItem* detail = (DetailItem*) sender();
         int i = std::distance(details.begin(), std::find(details.begin(),
@@ -38,7 +38,7 @@ protected slots:
     }
     // or maybe it should be bool?
 signals:
-    virtual void dataChanged(const QModelIndex &top_left, const QModelIndex &bottom_right, const QVector<int> &roles); // is it OK to make signal virtual?
+    void dataChanged(const QModelIndex &top_left, const QModelIndex &bottom_right, const QVector<int> &roles); // is it OK to make signal virtual?
     // or it will slow it down
 };
 
