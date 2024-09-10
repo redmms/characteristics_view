@@ -20,10 +20,33 @@ set(PROJECT_SOURCES
         controllerdialog.cpp
         controllerdialog.h
         controllerdialog.ui
-        mode.h
-        mode.cpp
+        detailmode.h
+        detailmode.cpp
         detailitem.h
         detailitem.cpp
+        material.h
+        material.cpp
+        detailmodel.h
+        detailmodel.cpp
+        enums.h
+        enums.cpp
+        helpers/abstracthelper.h
+        helpers/methodhelper.h
+        helpers/methodhelper.cpp
+        helpers/masshelper.h
+        helpers/masshelper.cpp
+        helpers/densityhelper.h
+        helpers/densityhelper.cpp
+        helpers/centerhelper.h
+        helpers/centerhelper.cpp
+        helpers/materialhelper.h
+        helpers/materialhelper.cpp
+        helpers/stylehelper.h
+        helpers/stylehelper.cpp
+        helpers/anglehelper.h
+        helpers/anglehelper.cpp
+        detailsortfiltermodel.h
+        detailsortfiltermodel.cpp
         media.qrc
         appicon.rc
 )

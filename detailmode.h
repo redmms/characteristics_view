@@ -8,11 +8,11 @@ class QLineEdit;
 class Mode
 {
 private:
-   std::list<QWidget*> hideptrs;
-   std::list<QWidget*> showptrs;
-   std::list<QWidget*> enableptrs;
-   std::list<QWidget*> disableptrs;
-   std::list<QLineEdit*> editptrs;
+   const std::list<QWidget*> hideptrs;
+   const std::list<QWidget*> showptrs;
+   const std::list<QWidget*> enableptrs;
+   const std::list<QWidget*> disableptrs;
+   const std::list<QLineEdit*> editptrs;
    QString default_value;
    std::map<QLineEdit*, QString> defvals;
 

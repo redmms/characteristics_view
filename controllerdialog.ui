@@ -29,6 +29,40 @@
    <iconset resource="media.qrc">
     <normaloff>:/icons/window_icons/mainwindow_icon.png</normaloff>:/icons/window_icons/mainwindow_icon.png</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QLineEdit{
+	border:  2 solid grey;
+
+}
+QComboBox{
+	border: 2 solid grey;
+}
+QCheckBox{
+	border: 2 solid grey;
+
+}
+  QGroupBox::indicator:checked {
+      border: 3px solid black;  // Толщина и цвет границы
+       width: 20px;              // Ширина чекбокса
+      height: 20px;             // Высота чекбокса
+   }
+    QGroupBox::indicator:unchecked {
+        border: 3px solid black;
+        width: 20px;
+        height: 20px;
+    }
+QGroupBox {
+    border: 2px solid gray;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 0 3px;
+    background-color: white;
+}</string>
+  </property>
   <property name="inputMethodHints">
    <set>Qt::ImhNone</set>
   </property>

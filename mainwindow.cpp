@@ -10,12 +10,13 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    model(new QStandardItemModel(0, 7, this))
+    model(new Model(0, this)),
+    proxy(new QSortFilterProxyModel(this))
 {
     ui->setupUi(this);
     readSettings();
     QList<QString> headers{  // instead of QStringList to avoid extra include
-        "способ рассчета", // please, add translations for these phrazes
+        "способ расчёта", // please, add translations for these phrazes
         "масса",
         "плотность",
         "центр масс",
@@ -24,9 +25,11 @@ MainWindow::MainWindow(QWidget *parent) :
         "угол штриховки"
     };
     for (int i = 0; i < headers.size(); ++i) {
-        model->setHeaderData(i, Qt::Horizontal, headers[i], Qt::DisplayRole);
+        //model->setHeaderData(i, Qt::Horizontal, headers[i], Qt::DisplayRole);
+        model->setHeaderData(i, headers[i]);
     }
-    ui->tableView->setModel(model);
+    proxy->setSourceModel(model);
+    ui->tableView->setModel(proxy);
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     // Connect custom slots
@@ -57,7 +60,7 @@ void MainWindow::on_addLineButton_clicked()
 {
     ControllerDialog controller(this);
     if(controller.exec()){
-        QList<QStandardItem*> new_row = controller.getInsertedLine();
+        DetailItem* new_row = controller.getInsertedLine();
         int insert_idx = ui->tableView->currentIndex().row() + 1;
         if (!insert_idx){
             insert_idx = model->rowCount();

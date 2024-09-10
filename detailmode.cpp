@@ -1,4 +1,4 @@
-#include "mode.h"
+#include "detailmode.h"
 #include "ui_mainwindow.h"
 #include <QLineEdit>
 #include <QWidget>

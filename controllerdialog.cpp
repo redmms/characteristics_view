@@ -10,8 +10,8 @@
 ControllerDialog::ControllerDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ControllerDialog),
-    insertedLine{},
-    validator(new QRegularExpressionValidator(QRegularExpression("[0-9]*"), this)),
+    detail(nullptr),
+    validator(new QRegularExpressionValidator(QRegularExpression("^[0-9]{0,9}$"), this)),
     current_mode{mass_mode}
 {
     ui->setupUi(this);
@@ -64,9 +64,9 @@ ControllerDialog::~ControllerDialog()
     delete ui;
 }
 
-QList<QStandardItem*> ControllerDialog::getInsertedLine()
+DetailItem* ControllerDialog::getInsertedLine()
 {
-    return insertedLine;
+    return detail;
 }
 
 void ControllerDialog::on_cancelButton_clicked()
@@ -78,8 +78,6 @@ void ControllerDialog::on_applyButton_clicked()
 {
     // Save text from that QEditLine's from ui which are in the current mode
     // and are being filled with default values by Mode functions
-    QMap<QString, QString> input;
-    modes[current_mode]->getText(input);
 
     // initialize with this QStrings converted, or
     // make Detail object and assign/set its members
@@ -90,43 +88,64 @@ void ControllerDialog::on_applyButton_clicked()
     // QLineEdits to fill with "0"s when we initialized
     // QMap modes, and only those lines will be readed
     // (added into that map by calling Mode::getText())
-    QString method = ui->methodBox->currentText();
-    QString mass = input.value("massEdit", "");
-    QString density = input.value("densityFrame", "");
-    QString center = "";
-    if (current_mode == mass_mode && ui->coordBox->isChecked()){
-        center =    input.value("xEdit", "") + "," +
-                    input.value("yEdit", "") + "," +
-                    input.value("zEdit", "");
-    }
+
+    // Считываем ввод из UI
+    QMap<QString, QString> input;
+    modes[current_mode]->getText(input);  // Считываем поля, зависимые от способа расчёта
+    QString method = ui->methodBox->currentText();  // Считываем статичные поля
     QString material = ui->materialEdit->text();
     QString style = ui->styleBox->currentText();
-    QString angle = input.value("angleEdit", "");
 
-    // Check input for empty values
+    // Проверяем ввод на пустые значения
     if (input.values().contains("") || material == ""){ // is there a better way, to avoid allocating extra memory?
         QMessageBox msg_box(this);
         msg_box.setWindowTitle("Пустые значения");
-        msg_box.setText("Не все данные заполнены. Всё равно продолжить?");
+        msg_box.setText("Не все данные заполнены.");
         msg_box.setIcon(QMessageBox::Warning);
-        msg_box.addButton("Продолжить", QMessageBox::AcceptRole);
-        msg_box.addButton("Заполнить", QMessageBox::RejectRole);
-        if (msg_box.exec()){
-            insertedLine.clear();
-            return;
-        }
+        msg_box.addButton("Заполнить", QMessageBox::AcceptRole);
+        msg_box.exec();
+        return;
     }
 
-    for (const QString& column_name : {method, mass, density, center, material,
-            style, angle}){ // how should I format this line?
-        insertedLine.push_back(new QStandardItem(column_name));
+    // Заполняем поля детали, которую потом передадим главному окну методом get
+    detail = new DetailItem(this);
+    switch(current_mode){
+    case mass_mode:
+        detail->setMethod(mode_nums[method]);
+        detail->setMass(input.value("massEdit", "!").toInt());
+        if (ui->coordBox->isChecked()){
+            QString x = input.value("xEdit", "!");
+            QString y = input.value("yEdit", "!");
+            QString z = input.value("zEdit", "!");
+            QVector3D center{x.toInt(), y.toInt(), z.toInt()};
+            detail->setCenter(center);
+        }
+        detail->setMaterialName(material);
+        detail->setMaterialStyle(style_nums[style]);
+        detail->setMaterialAngle(input.value("angleEdit", "!").toInt());
+        break;
+    case density_mode:
+        detail->setMethod(mode_nums[method]);
+        detail->setDensity(input.value("densityEdit", "!").toInt());
+        detail->setMaterialName(material);
+        detail->setMaterialStyle(style_nums[style]);
+        detail->setMaterialAngle(input.value("angleEdit", "!").toInt());
+        break;
+    case copy_mode:
+        detail->setMethod(mode_nums[method]);
+        detail->setMass(input.value("massEdit", "!").toInt());
+        detail->setDensity(input.value("densityEdit", "!").toInt());
+        detail->setMaterialName(material);
+        detail->setMaterialStyle(style_nums[style]);
+        detail->setMaterialAngle(input.value("angleEdit", "!").toInt());
+        break;
     }
     accept();
 }
 
 void ControllerDialog::on_methodBox_currentIndexChanged(int index)
 {    
-    Modenum new_mode = Modenum(index);
+    ModeNum new_mode = ModeNum(index);
     modes[current_mode]->turnOff();
     modes[new_mode]->turnOn();
     modes[new_mode]->fillInDefVals();

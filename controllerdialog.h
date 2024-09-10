@@ -1,14 +1,10 @@
 #pragma once
-#include "mode.h"
+#include "detailmode.h"
 #include <QDialog>
 #include <QList>
-// #include <Detail>
-
-enum Modenum{
-    mass_mode,
-    density_mode,
-    copy_mode
-};
+#include "detailitem.h"
+#include <QMap>
+#include "enums.h"
 
 namespace Ui { class ControllerDialog; }
 class QStandardItem;
@@ -19,15 +15,15 @@ class ControllerDialog : public QDialog
     Q_OBJECT
 private:
     Ui::ControllerDialog *ui;
-    QList<QStandardItem*> insertedLine;
+    DetailItem* detail;
     QRegularExpressionValidator* validator;
-    std::unordered_map<Modenum, Mode*> modes;
-    Modenum current_mode;
+    QMap<ModeNum, Mode*> modes;
+    ModeNum current_mode;
 
 public:
     explicit ControllerDialog(QWidget *parent = nullptr);
     ~ControllerDialog();
-    QList<QStandardItem*> getInsertedLine();
+    DetailItem* getInsertedLine();
 
 private slots:
     void on_cancelButton_clicked();

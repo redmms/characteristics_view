@@ -2,6 +2,8 @@
 #include <QMainWindow>
 #include <QString>
 #include <unordered_map> // is it ok, or map is better?
+#include "detailmodel.h"
+#include <QSortFilterProxyModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,7 +17,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     Ui::MainWindow* ui;
-    QStandardItemModel* model;
+    Model* model;
+    QSortFilterProxyModel* proxy;
+
     void closeEvent(QCloseEvent* event);
     void readSettings();
 
