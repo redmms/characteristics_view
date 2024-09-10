@@ -9,16 +9,16 @@
 #include "helpers/methodhelper.h"
 #include "helpers/stylehelper.h"
 
-Model::Model(int rows, QObject *parent) :
+DetailModel::DetailModel(int rows, QObject *parent) :
     details{rows, {}},
     helpers{
-        new MethodHelper(this),
-        new MassHelper(this),
-        new DensityHelper(this),
-        new CenterHelper(this),
-        new MaterialHelper(this),
-        new StyleHelper(this),
-        new AngleHelper(this)
+        new MethodHelper(details, helpers, this),
+        new MassHelper(details, helpers, this),
+        new DensityHelper(details, helpers, this),
+        new CenterHelper(details, helpers, this),
+        new MaterialHelper(details, helpers, this),
+        new StyleHelper(details, helpers, this),
+        new AngleHelper(details, helpers, this)
     },
     headers{
         "способ расчёта", // please, add translations for these phrazes
@@ -28,34 +28,25 @@ Model::Model(int rows, QObject *parent) :
         "материал",
         "стиль штриховки",
         "угол штриховки"
-    },
-    detail_signal_names{
-        "methodChanged",
-        "massChanged",
-        "densityChanged",
-        "centerChanged",
-        "materialNameChanged",
-        "materialStyleChanged",
-        "materialAngleChanged"
     }
 {}
 
-int Model::rowCount(const QModelIndex& parent) const
+int DetailModel::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
     return details.size();
 }
 
-int Model::columnCount(const QModelIndex& parent) const
+int DetailModel::columnCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
     return helpers.size();
 }
 
-QVariant Model::data(const QModelIndex &index, int role) const
+QVariant DetailModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()){
-        return {};
+        return {}; // add row check
     }
 
     int i = index.row();
@@ -73,24 +64,19 @@ QVariant Model::data(const QModelIndex &index, int role) const
     }
 }
 
-void Model::insertRow(int row, DetailItem *detail) // should we
+void DetailModel::insertRow(int row, DetailItem *detail) // should we
 // check the pointer before adding, or when using?
 {
-//    for (int j = 0; j < detail_signal_names.size(); ++j){
-//        QString signal = detail_signal_names[j];
-//        connect(detail, signal.toStdString().c_str(), [&](){
-//            int i = details.indexOf(detail); // not efficient
-//            QModelIndex idx = createIndex(i, j);
-//            QList<int> roles = QList{int(Qt::DisplayRole)};
-//            emit QAbstractItemModel::dataChanged(idx, idx, roles);
-//        };
-//    }
+    for (auto helper : helpers){
+        helper->connectDetailSignal(detail);
+        connect(helper, &AbstractHelper::dataChanged, this, &QAbstractItemModel::dataChanged); // should be abstract or not?
+    }
     beginInsertRows(QModelIndex(), row, row); // by-one error?
     details.insert(details.begin() + row, detail);
     endInsertRows();
 }
 
-bool Model::removeRow(int row)
+bool DetailModel::removeRow(int row)
 {
     if (row >= 0 && row < details.size()){
         beginRemoveRows(QModelIndex(), row, row);
@@ -103,14 +89,14 @@ bool Model::removeRow(int row)
     }
 }
 
-void Model::setHeaderData(int section, const QVariant &value)
+void DetailModel::setHeaderData(int section, const QVariant &value)
 {  // Можно сделать упрощенный вариант чисто для горизонтальных строковых заголовков?
     // Если желательно полный вариант, то как?
     headers[section] = value.toString();
     emit headerDataChanged(Qt::Horizontal, section, section);
 }
 
-QVariant Model::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant DetailModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole){
         return headers.at(section);

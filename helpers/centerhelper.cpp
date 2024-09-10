@@ -1,9 +1,6 @@
 #include "centerhelper.h"
 
-CenterHelper::CenterHelper(QObject* parent)
-{
 
-}
 
 QVariant CenterHelper::getString(DetailItem *detail)
 {
@@ -13,5 +10,10 @@ QVariant CenterHelper::getString(DetailItem *detail)
 QVariant CenterHelper::getIcon(DetailItem *detail)
 {
     return {};
+}
+
+void CenterHelper::connectDetailSignal(DetailItem *detail)
+{
+    connect(detail, &DetailItem::centerChanged, this, &CenterHelper::findChangedIndex);
 }
 

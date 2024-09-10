@@ -1,10 +1,6 @@
 #include "methodhelper.h"
 
-MethodHelper::MethodHelper(QObject *parent)
-    : QObject{parent}
-{
 
-}
 
 QVariant MethodHelper::getString(DetailItem *detail)
 {
@@ -14,4 +10,10 @@ QVariant MethodHelper::getString(DetailItem *detail)
 QVariant MethodHelper::getIcon(DetailItem *detail)
 {
     return detail->getMethodIcon();
+}
+
+void MethodHelper::connectDetailSignal(DetailItem *detail)
+{
+    connect(detail, &DetailItem::methodChanged, this, &MethodHelper::findChangedIndex);
+
 }

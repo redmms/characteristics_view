@@ -1,10 +1,5 @@
 #include "stylehelper.h"
 
-StyleHelper::StyleHelper(QObject *parent)
-    : QObject{parent}
-{
-
-}
 
 QVariant StyleHelper::getString(DetailItem *detail)
 {
@@ -15,4 +10,10 @@ QVariant StyleHelper::getIcon(DetailItem *detail)
 {
     return QIcon(detail->getMaterialStyleIcon().pixmap(120, 75).copy(0,0,75,75).
                  scaled(30, 30));
+}
+
+void StyleHelper::connectDetailSignal(DetailItem *detail)
+{
+    connect(detail, &DetailItem::materialStyleChanged, this, &StyleHelper::findChangedIndex);
+
 }

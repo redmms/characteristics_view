@@ -23,7 +23,7 @@ public:
     explicit DetailItem(QObject* parent = nullptr, ModeNum eval_method_ = none_mode,
                         int mass_ = -1, int density_ = -1,
                         QVector3D mass_center_ = {-1, -1, -1},
-                        Material material_ = {});
+                        Material material_ = Material());
 
     bool isValidMethod(ModeNum method_);
     bool isValidMass(int mass_);

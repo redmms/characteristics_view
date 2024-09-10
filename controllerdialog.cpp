@@ -11,7 +11,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ControllerDialog),
     detail(nullptr),
-    validator(new QRegularExpressionValidator(QRegularExpression("^[0-9]{0,9}$"), this)),
+    validator(new QRegularExpressionValidator(QRegularExpression("^[0-9]{0,7}$"), this)),
     current_mode{mass_mode}
 {
     ui->setupUi(this);
@@ -117,7 +117,7 @@ void ControllerDialog::on_applyButton_clicked()
             QString x = input.value("xEdit", "!");
             QString y = input.value("yEdit", "!");
             QString z = input.value("zEdit", "!");
-            QVector3D center{x.toInt(), y.toInt(), z.toInt()};
+            QVector3D center{x.toFloat(), y.toFloat(), z.toFloat()};
             detail->setCenter(center);
         }
         detail->setMaterialName(material);

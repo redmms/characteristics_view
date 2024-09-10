@@ -39,29 +39,41 @@ QComboBox{
 }
 QCheckBox{
 	border: 2 solid grey;
-
 }
-  QGroupBox::indicator:checked {
-      border: 3px solid black;  // Толщина и цвет границы
-       width: 20px;              // Ширина чекбокса
-      height: 20px;             // Высота чекбокса
-   }
-    QGroupBox::indicator:unchecked {
-        border: 3px solid black;
-        width: 20px;
-        height: 20px;
-    }
+
 QGroupBox {
-    border: 2px solid gray;
-    border-radius: 5px;
+    border: 0;
     margin-top: 20px;
 }
 QGroupBox::title {
+  background: transparent;
+
     subcontrol-origin: margin;
     subcontrol-position: top center;
     padding: 0 3px;
-    background-color: white;
-}</string>
+
+}
+  QGroupBox::indicator {
+  background: white;
+      border: 2px solid black;  
+       width: 15px;             
+      height: 15px;           
+   }
+
+  QGroupBox::indicator::checked {
+ image: url(&quot;:/icons/styles/checkbox_arrow.png&quot;); 
+}
+
+QComboBox::drop-down{
+background: transparent;
+}
+
+QComboBox::down-arrow{
+image: url(&quot;:/icons/styles/drop_down_arrow.png&quot;);
+width: 10;
+height: 10;
+}
+</string>
   </property>
   <property name="inputMethodHints">
    <set>Qt::ImhNone</set>

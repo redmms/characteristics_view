@@ -7,17 +7,17 @@
 #include <vector>
 #include "helpers/abstracthelper.h"
 
-class Model : public QAbstractTableModel
+class DetailModel : public QAbstractTableModel
 {
     Q_OBJECT // should I place Q_OBJECT here or it is already in parent class?
 private:
     std::vector<DetailItem*> details;
     const std::vector<AbstractHelper*> helpers;
     std::vector<QString> headers;
-    const std::vector<QString> detail_signal_names;
+    const std::vector<void (DetailItem::*)()> detail_signal_names;
 
 public:
-    explicit Model(int rows = 0, QObject *parent = nullptr);
+    explicit DetailModel(int rows = 0, QObject *parent = nullptr);
     int rowCount(const QModelIndex& parent  = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;

@@ -10,7 +10,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    model(new Model(0, this)),
+    model(new DetailModel(0, this)),
     proxy(new QSortFilterProxyModel(this))
 {
     ui->setupUi(this);
@@ -70,6 +70,8 @@ void MainWindow::on_addLineButton_clicked()
             // (appending wouldn't need it)
         }
         model->insertRow(insert_idx, new_row);
+        new_row->setMaterialName("I'm back!!!!!!");
+        new_row->setCenter({99999, 126789, 21234});
     }
 }
 

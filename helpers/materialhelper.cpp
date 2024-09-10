@@ -1,10 +1,6 @@
 #include "materialhelper.h"
 
-MaterialHelper::MaterialHelper(QObject *parent)
-    : QObject{parent}
-{
 
-}
 
 QVariant MaterialHelper::getString(DetailItem *detail)
 {
@@ -14,4 +10,9 @@ QVariant MaterialHelper::getString(DetailItem *detail)
 QVariant MaterialHelper::getIcon(DetailItem *detail)
 {
     return {};
+}
+
+void MaterialHelper::connectDetailSignal(DetailItem *detail)
+{
+    connect(detail, &DetailItem::materialNameChanged, this, &MaterialHelper::findChangedIndex);
 }

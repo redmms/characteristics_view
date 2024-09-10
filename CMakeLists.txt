@@ -45,8 +45,6 @@ set(PROJECT_SOURCES
         helpers/stylehelper.cpp
         helpers/anglehelper.h
         helpers/anglehelper.cpp
-        detailsortfiltermodel.h
-        detailsortfiltermodel.cpp
         media.qrc
         appicon.rc
 )

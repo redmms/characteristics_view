@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     Ui::MainWindow* ui;
-    Model* model;
+    DetailModel* model;
     QSortFilterProxyModel* proxy;
 
     void closeEvent(QCloseEvent* event);

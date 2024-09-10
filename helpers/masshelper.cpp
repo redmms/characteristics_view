@@ -1,9 +1,6 @@
 #include "masshelper.h"
 
-MassHelper::MassHelper(QObject* parent)
-{
 
-}
 
 QVariant MassHelper::getString(DetailItem *detail)
 {
@@ -13,5 +10,11 @@ QVariant MassHelper::getString(DetailItem *detail)
 QVariant MassHelper::getIcon(DetailItem *detail)
 {
     return {};
+}
+
+void MassHelper::connectDetailSignal(DetailItem *detail)
+{
+    connect(detail, &DetailItem::massChanged, this, &MassHelper::findChangedIndex);
+
 }
 

@@ -1,9 +1,6 @@
 #include "densityhelper.h"
 
-DensityHelper::DensityHelper(QObject* parent)
-{
 
-}
 
 QVariant DensityHelper::getString(DetailItem *detail)
 {
@@ -13,5 +10,11 @@ QVariant DensityHelper::getString(DetailItem *detail)
 QVariant DensityHelper::getIcon(DetailItem *detail)
 {
     return {};
+}
+
+void DensityHelper::connectDetailSignal(DetailItem *detail)
+{
+    connect(detail, &DetailItem::densityChanged, this, &DensityHelper::findChangedIndex);
+
 }
 
