@@ -31,6 +31,7 @@ set(PROJECT_SOURCES
         enums.h
         enums.cpp
         helpers/abstracthelper.h
+        helpers/abstracthelper.cpp
         helpers/methodhelper.h
         helpers/methodhelper.cpp
         helpers/masshelper.h

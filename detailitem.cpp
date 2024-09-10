@@ -10,22 +10,7 @@ DetailItem::DetailItem(QObject *parent, ModeNum eval_method_, int mass_,
     mass_center(mass_center_),
     material(material_)
 {
-//    if (!isValidMethod(eval_method_)){
-//        qCritical() << "Wrong eval_method_ argument";
-//    }
-//    if (!isValidMass(mass_)){
-//        qCritical() << "Wrong mass_ argument";
-//    }
-//    if (!isValidDensity(density_)){
-//        qCritical() << "Wrong density_ argument";
-//    }
-//    // is it Ok that QVector3D stores doubles, but we use ints?
-//    if (!isValidCenter(mass_center_)){
-//        qCritical() << "Wrong mass_center_ argument";
-//    }
-//    if (!material_.isValid()){
-//        qCritical() << "Wrong material_ argument";
-//    }
+    // Подключаем слоты Material:
     connect(&material, &Material::nameChanged, this,
             &DetailItem::materialNameChanged);
     connect(&material, &Material::styleChanged, this,
@@ -36,26 +21,31 @@ DetailItem::DetailItem(QObject *parent, ModeNum eval_method_, int mass_,
 
 bool DetailItem::isValidNum(int num)
 {
+    // Валидация чисел по умолчанию:
     return num >= 0;
 }
 
 bool DetailItem::isValidMethod(ModeNum method_)
 {
+    // Валидация enum:
     return method_ >= 0 && method_ < none_mode;
 }
 
 bool DetailItem::isValidMass(int mass_)
 {
+    // Валидация по умолчанию:
     return isValidNum(mass_);
 }
 
 bool DetailItem::isValidDensity(int density_)
 {
+    // Валидация по умолчанию:
     return isValidNum(density_);
 }
 
 bool DetailItem::isValidCoord(int coord)
 {
+    // Валидация по умолчанию:
     return isValidNum(coord);
 }
 
@@ -86,6 +76,7 @@ Material DetailItem::getMaterial()
 
 bool DetailItem::setMethod(ModeNum eval_method_)
 {
+    // Сэттер способа расчета:
     bool success = isValidMethod(eval_method_);
     if (success){
         eval_method = eval_method_;
@@ -96,6 +87,7 @@ bool DetailItem::setMethod(ModeNum eval_method_)
 
 bool DetailItem::setMass(int mass_)
 {
+    // Сэттер массы:
     bool success = isValidMass(mass_); // add mode checks? no, no need
     if (success){
         mass = mass_;
@@ -106,10 +98,8 @@ bool DetailItem::setMass(int mass_)
 
 bool DetailItem::setDensity(int density_)
 {
+    // Сэттер плотности:
     bool success = isValidDensity(density_);
-    // the problem here is that we cannot set
-        // the field empty
-        // should this be an option?
     if (success){
         density = density_;
         emit densityChanged();
@@ -119,6 +109,7 @@ bool DetailItem::setDensity(int density_)
 
 bool DetailItem::setCenter(QVector3D mass_center_) // ?
 {
+    // Сэттер центра масс:
     bool success = isValidCenter(mass_center_);
     if (success){
         mass_center = mass_center_;
@@ -129,6 +120,7 @@ bool DetailItem::setCenter(QVector3D mass_center_) // ?
 
 bool DetailItem::setMaterial(Material material_)
 {
+    // Сэттер поля Material:
     setMaterialName(material_.getName());
     return setMaterialAngle(material_.getAngle()) &&
            setMaterialStyle(material_.getStyle());
@@ -136,36 +128,43 @@ bool DetailItem::setMaterial(Material material_)
 
 void DetailItem::setMaterialName(QString material_name_)
 {
+    // Сэттер названия материала:
     material.setName(material_name_);
 }
 
 bool DetailItem::setMaterialStyle(HatchStyleNum style_)
 {
+    // Сэттер стиля штриховки:
     return material.setStyle(style_);
 }
 
 bool DetailItem::setMaterialAngle(int angle_)
 {
+    // Сэттер угла штриховки:
     return material.setAngle(angle_);
 }
 
 QString DetailItem::methodToString()
 {
+    // Преобразование в строку:
     return isValidMethod(eval_method) ? mode_names[eval_method] : "";
 }
 
 QString DetailItem::massToString()
 {
+    // Преобразование в строку:
     return isValidMass(mass) ? QString::number(mass) : "";
 }
 
 QString DetailItem::densityToString()
 {
+    // Преобразование в строку:
     return isValidDensity(density) ? QString::number(density) : "";
 }
 
 QString DetailItem::centerToString()
 {
+    // Преобразование в строку:
     QString result = "";
     if (isValidCenter(mass_center)){
         QString x = QString::number(int(mass_center.x()));
@@ -178,33 +177,38 @@ QString DetailItem::centerToString()
 
 QString DetailItem::materialNameToString()
 {
+    // Преобразование в строку:
     return material.nameToString();
 }
 
 QString DetailItem::materialStyleToString()
 {
+    // Преобразование в строку:
     return material.styleToString();
 }
 
 QString DetailItem::materialAngleToString()
 {
+    // Преобразование в строку:
     return material.angleToString();
 }
 
 QString DetailItem::materialShortNameToString()
 {
+    // Преобразование в строку:
     return material.shortNameToString();
 }
 
-bool DetailItem::isValidIcon(QIcon icon_) // should I use const& for everything
-// except QString?
+bool DetailItem::isValidIcon(QIcon icon_)
 {
+    // Проверка иконки на пустоту и невалидный путь:
     return !icon_.isNull() && !icon_.pixmap(70, 70).isNull();
     // here 70 x 70 is calc_n.png size
 }
 
 bool DetailItem::isValidCenter(QVector3D mass_center_)
 {
+    // Валидация по умолчанию:
     return isValidCoord(mass_center_.x()) &&
            isValidCoord(mass_center_.y()) &&
            isValidCoord(mass_center_.z());

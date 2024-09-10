@@ -22,14 +22,10 @@ FillMode::FillMode(const std::list<QWidget *> &hideptrs_,
     event_filter(event_filter_)
 {}
 
-//void Mode::changeMode(const Mode& current_mode, const Mode& new_mode)
-//{
-
-//}
-
 void FillMode::turnOn()
 {
-    // Use it only after turnOff() of previously used mode was called
+    // Включение режима:
+    // Использовать только после turnOff() предыдущего режима
     for (auto uiptr : hideptrs){
         uiptr->hide();
     }
@@ -42,6 +38,9 @@ void FillMode::turnOn()
     for (auto uiptr : disableptrs){
         uiptr->setEnabled(false);
     }
+
+    // Установка фильтра событий для выделения ввода из полей UI, но можно
+    // использовать и для другого:
     if (event_filter){
         for (auto uiptr : editptrs){
             if (uiptr->isEnabled()){
@@ -56,6 +55,7 @@ void FillMode::turnOn()
 
 void FillMode::turnOff()
 {
+    // Отключение режима:
     for (auto uiptr : hideptrs){
         uiptr->show();
     }
@@ -68,6 +68,8 @@ void FillMode::turnOff()
     for (auto uiptr : disableptrs){
         uiptr->setEnabled(true);
     }
+
+    // Отключения всех фильтров событий, что могли установить ранее:
     if (event_filter){
         for (auto uiptr : editptrs){
             uiptr->removeEventFilter(event_filter);
@@ -77,6 +79,9 @@ void FillMode::turnOff()
 
 QMap<QLineEdit*, QString> FillMode::getText()
 {
+    // Получаем текст из полей ввода, видимых в этом режиме.
+    // Видимость не гарантируется и обеспечивается инициализацией
+    // списа edit_ptrs
     QMap<QLineEdit*, QString> line_edit_input;
     for (auto uiptr : editptrs){
         line_edit_input[uiptr] = uiptr->text();
@@ -86,16 +91,19 @@ QMap<QLineEdit*, QString> FillMode::getText()
 
 void FillMode::setDefVal(QLineEdit *uiptr, QString defval)
 {
+    // Заполняем поле ввода значением по умолчанию:
     defvals[uiptr] = defval;
 }
 
 void FillMode::clearDefVals()
 {
+    // Очищаем словарь пользовательских дефолтных значений:
     defvals.clear();
 }
 
 void FillMode::fillInDefVals()
 {
+    // Заполняем поля ввода пользовательскими значениями по умолчанию:
     for (auto uiptr : editptrs){
         if (defvals.count(uiptr)){
             uiptr->setText(defvals[uiptr]);
@@ -108,6 +116,9 @@ void FillMode::fillInDefVals()
 
 void FillMode::setDefFocus()
 {
-    auto_focus_ptr->selectAll();
-    auto_focus_ptr->setFocus();
+    // Ставим курсор в поле по умолчанию:
+    if (auto_focus_ptr){
+        auto_focus_ptr->selectAll();
+        auto_focus_ptr->setFocus();
+    }
 }

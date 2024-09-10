@@ -1,8 +1,7 @@
 #pragma once
+#include "detailmodel.h"
 #include <QMainWindow>
 #include <QString>
-#include <unordered_map> // is it ok, or map is better?
-#include "detailmodel.h"
 #include <QSortFilterProxyModel>
 
 QT_BEGIN_NAMESPACE
@@ -16,19 +15,25 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
-    Ui::MainWindow* ui;
-    DetailModel* model;
-    QSortFilterProxyModel* proxy;
+    // Приватные поля:
+    Ui::MainWindow* ui;  // В умном указателе
+    DetailModel* model;  // В иерархии
+    QSortFilterProxyModel* proxy;  // В иерархии
 
-    void closeEvent(QCloseEvent* event);
-    void readSettings();
+    // Приватные методы:
+    void closeEvent(QCloseEvent* event);  // Для сохранения геометрии
+    void readSettings();  // Для восстановления геометрии
 
 public:
+    // Конструктор:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
+    // Автоген слоты для UI:
     void on_addLineButton_clicked();
     void on_deleteLineButton_clicked();
+
+    // Пользовательский слот UI:
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 };

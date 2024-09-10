@@ -9,19 +9,23 @@ class QLineEdit;
 class FillMode
 {
 private:
-   const std::list<QWidget*> hideptrs;
-   const std::list<QWidget*> showptrs;
-   const std::list<QWidget*> enableptrs;
-   const std::list<QWidget*> disableptrs;
-   const std::list<QLineEdit*> editptrs;
-   QLineEdit* const auto_focus_ptr;
-   QString default_value;
-   std::map<QLineEdit*, QString> defvals;
-   QObject* event_filter;
+    // Приватные поля:
+    // Описывают, какие элементы UI изменить в данном режиме относительно
+    // обычного состояния виджета.
+    const std::list<QWidget*> hideptrs;  // Описывает, что скрывать
+    const std::list<QWidget*> showptrs;  // Что показать
+    const std::list<QWidget*> enableptrs;  // Что разгреить
+    const std::list<QWidget*> disableptrs;  // Что загреить
+    const std::list<QLineEdit*> editptrs;  // Где читать и заполнять
+    QLineEdit* const auto_focus_ptr; // Что выделять в первую очередь
+    QString default_value;  // Чем заполнять
+    std::map<QLineEdit*, QString> defvals;  // Гибкая настройка чем заполнять
+    QObject* event_filter;  // Как и когда выделять
 
 
 public:
-    FillMode(const std::list<QWidget*>& hideptrs_,
+   // Конструктор:
+   FillMode(const std::list<QWidget*>& hideptrs_,
          const std::list<QWidget*>& showptrs_,
          const std::list<QWidget*>& enableptrs_,
          const std::list<QWidget*>& disableptrs_,
@@ -30,7 +34,8 @@ public:
          QString default_value_ = "0",
          QObject* event_filter_ = nullptr,
          QObject* parent_ = nullptr);
-//    static void changeMode(const Mode& current_mode, const Mode& new_mode);
+
+    // Публичные методы:
     void turnOn();
     void turnOff();
     QMap<QLineEdit*, QString> getText();

@@ -12,10 +12,13 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ControllerDialog),
     detail(nullptr),
-    validator(new QRegularExpressionValidator(QRegularExpression("^[0-9]{0,7}$"), this)),
+    validator(new QRegularExpressionValidator(
+        QRegularExpression("^[0-9]{0,7}$"), this)),  // До 7 цифр, как во float
     current_mode{mass_mode}
 {
     ui->setupUi(this);
+
+    // Определяем то, что зависит от UI:
     modes = {
         {
             mass_mode,
@@ -46,22 +49,26 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
         {
             copy_mode,
                 new FillMode(
-                    {ui->coordBox},
-                    {ui->massFrame, ui->densityFrame},
-                    {},
+                    {ui->coordBox}, // hide
+                    {ui->massFrame, ui->densityFrame},  // show
+                    {}, // enable
                     {ui->massEdit, ui->densityEdit, ui->styleBox,
-                     ui->angleEdit},
+                     ui->angleEdit, ui->materialEdit}, // disable
                     {ui->massEdit, ui->densityEdit, ui->angleEdit},
-                    ui->materialEdit,
+                    nullptr,
                     "0",
                 this
                     )
         }
     };
+
+    // Устанавливаем валидатор:
     for (auto uiptr : {ui->massEdit, ui->xEdit, ui->yEdit, ui->zEdit,
             ui->angleEdit, ui->densityEdit}){
         uiptr->setValidator(validator);
     }
+
+    // Запускаем дефолтный режим:
     ui->materialEdit->installEventFilter(this);
     modes[current_mode]->turnOn();
     modes[current_mode]->fillInDefVals();
@@ -69,16 +76,19 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
 
 ControllerDialog::~ControllerDialog()
 {
+    // Освобождаем память:
     delete ui;
 }
 
 DetailItem* ControllerDialog::getInsertedLine()
 {
+    // Получаем введенные данные:
     return detail;
 }
 
 bool ControllerDialog::eventFilter(QObject *object, QEvent *event)
 {
+    // Выделяем всю строку для удобства пользователя:
     QLineEdit* edit = static_cast<QLineEdit*>(object);
     if(edit && event->type() == QEvent::FocusIn){ // RV: should I cast QEvent to some QMouseEvent?
         QTimer::singleShot(0,edit,SLOT(selectAll()));
@@ -88,30 +98,21 @@ bool ControllerDialog::eventFilter(QObject *object, QEvent *event)
 
 void ControllerDialog::on_cancelButton_clicked()
 {
+    // Закрываем окно без изменений:
     reject();
 }
 
 void ControllerDialog::on_applyButton_clicked()
 {
-    // Save text from that QEditLine's from ui which are in the current mode
-    // and are being filled with default values by Mode functions
+    // Считываем поля UI, зависимые от способа расчёта:
+    QMap<QLineEdit*, QString> input = modes[current_mode]->getText();
 
-    // initialize with this QStrings converted, or
-    // make Detail object and assign/set its members
-    // Those column names (left parts of assigning)
-    // which depend on the mode will be empty, if they
-    // are unused in the mode. This behaviour is
-    // guaranted because we specified which
-    // QLineEdits to fill with "0"s when we initialized
-    // QMap modes, and only those lines will be readed
-    // (added into that map by calling Mode::getText())
-
-    // Считываем ввод из UI
-    QMap<QLineEdit*, QString> input = modes[current_mode]->getText();  // Считываем поля, зависимые от способа расчёта
-    QString method = ui->methodBox->currentText();  // Считываем статичные поля
+    // Считываем статичные поля:
+    QString method = ui->methodBox->currentText();
     QString material = ui->materialEdit->text();
     QString style = ui->styleBox->currentText();
 
+    // Запоминаем имена каждого поля ввода, видимые пользователю
     QMap<QLineEdit*, QLabel*> edit_labels{
         {ui->massEdit, ui->massLabel},
         {ui->densityEdit, ui->densityLabel},
@@ -122,23 +123,29 @@ void ControllerDialog::on_applyButton_clicked()
         {ui->angleEdit, ui->angleLabel}
     };
 
-    // Проверяем ввод на пустые значения
+    // Проверяем ввод на пустые значения:
     QList<QLineEdit*> empty_edits;
-    for (auto it = input.begin(); it != input.end(); ++it) {
-        QString val = it.value();
-        if (it.key() == ui->xEdit || it.key() == ui->yEdit || it.key() == ui->zEdit){
-            if (ui->coordBox->isChecked() && val.isEmpty()){
-                empty_edits.push_back(it.key());
+    if (current_mode != copy_mode){
+        for (auto it = input.begin(); it != input.end(); ++it) {
+            QString val = it.value();
+            if (it.key() == ui->xEdit || it.key() == ui->yEdit ||
+                it.key() == ui->zEdit){
+                if (ui->coordBox->isChecked() && val.isEmpty()){
+                    empty_edits.push_back(it.key());  // Отдельная проверка координат
+                }
+            }
+            else if (val.isEmpty()) {
+                empty_edits.push_back(it.key()); // Все остальные поля ввода
             }
         }
-        else if (val.isEmpty()) {  // Проверка значения на пустую строку
-            empty_edits.push_back(it.key());
+
+        // Отдельная проверка имени материала:
+        if (material == ""){
+            empty_edits.push_back(ui->materialEdit);
         }
     }
-    if (material == ""){
-        empty_edits.push_back(ui->materialEdit);
-    }
 
+    // Готовим предупреждение пользователю:
     QString empty_names = "";
     for (auto empty_edit : empty_edits){
         empty_names.push_back("\"");
@@ -147,7 +154,7 @@ void ControllerDialog::on_applyButton_clicked()
     }
     empty_names.chop(2);
 
-
+    // Предупреждаем пользователя о пустых значениях:
     if (!empty_edits.isEmpty()){ // is there a better way, to avoid allocating extra memory?
         QMessageBox msg_box(this);
         msg_box.setWindowTitle("Пустые значения");
@@ -166,12 +173,11 @@ void ControllerDialog::on_applyButton_clicked()
     }
 
     // Заполняем поля детали, которую потом передадим главному окну методом get
-    detail = new DetailItem();
     // Диалог контроллера не динамический в MainWindow, поэтому не устанавливаем
     // пока родителя для DetailItem(), это произойдет в DetailModel
+    detail = new DetailItem();
 
-
-
+    // Заполняем данные детали:
     switch(current_mode){
     case mass_mode:
         detail->setMethod(mode_nums[method]);
@@ -207,7 +213,8 @@ void ControllerDialog::on_applyButton_clicked()
 }
 
 void ControllerDialog::on_methodBox_currentIndexChanged(int index)
-{    
+{
+    // Меняем режим ввода:
     ModeNum new_mode = ModeNum(index);
     modes[current_mode]->turnOff();
     modes[new_mode]->turnOn();

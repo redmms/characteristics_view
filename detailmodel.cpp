@@ -33,18 +33,23 @@ DetailModel::DetailModel(int rows, QObject *parent) :
 
 int DetailModel::rowCount(const QModelIndex& parent) const
 {
+    // Количество строк:
     Q_UNUSED(parent)
     return details.size();
 }
 
 int DetailModel::columnCount(const QModelIndex& parent) const
 {
+    // Количество колонок:
     Q_UNUSED(parent)
     return helpers.size();
 }
 
 QVariant DetailModel::data(const QModelIndex &index, int role) const
 {
+    // Метод для отображения ячеек в представлении
+
+    // Проверка индекса:
     if (!index.isValid()){
         return {}; // add row check
     }
@@ -52,6 +57,7 @@ QVariant DetailModel::data(const QModelIndex &index, int role) const
     int i = index.row();
     int j = index.column(); // TODO: check index for validity
 
+    // Свой хэлпер для каждой колонки, своя деталь для каждой строки:
     switch (role) {
     case Qt::DisplayRole:
         return helpers[j]->getString(details[i]);
@@ -67,18 +73,25 @@ QVariant DetailModel::data(const QModelIndex &index, int role) const
 void DetailModel::insertRow(int row, DetailItem *detail) // should we
 // check the pointer before adding, or when using?
 {
+    // Метод вставки строки
+
+    // Подключаем сигналы изменения полей детали, они же ячейки:
     for (auto helper : helpers){
         helper->connectDetailSignal(detail);
         connect(helper, &AbstractHelper::dataChanged, this, &QAbstractItemModel::dataChanged); // should be abstract or not?
     }
-    beginInsertRows(QModelIndex(), row, row); // by-one error?
+
+    // Вставлем строки-детали и уведомляем представление
+    beginInsertRows(QModelIndex(), row, row); // "Уведомление"
     details.insert(details.begin() + row, detail);
     endInsertRows();
-  //  detail->setParent(this);
 }
 
 bool DetailModel::removeRow(int row)
 {
+    // Метод удаления строки
+
+    // Удаляем строки-детали и уведомляем представление
     if (row >= 0 && row < details.size()){
         beginRemoveRows(QModelIndex(), row, row);
         details.erase(details.begin() + row);
@@ -91,14 +104,15 @@ bool DetailModel::removeRow(int row)
 }
 
 void DetailModel::setHeaderData(int section, const QVariant &value)
-{  // Можно сделать упрощенный вариант чисто для горизонтальных строковых заголовков?
-    // Если желательно полный вариант, то как?
+{
+    // Сэттер для заголовка таблицы
     headers[section] = value.toString();
     emit headerDataChanged(Qt::Horizontal, section, section);
 }
 
 QVariant DetailModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    // Метод для отображения ячеек заголовка в представлении
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole){
         return headers.at(section);
     }
