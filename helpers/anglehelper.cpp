@@ -1,21 +1,21 @@
 #include "anglehelper.h"
 
-QVariant AngleHelper::getString(DetailItem *detail)
+QVariant AngleHelper::getString(PartItem *part)
 {
     // Строка для Qt::DisplayRole:
-    return detail->materialAngleToString();
+    return part->materialAngleToString();
 }
 
-QVariant AngleHelper::getIcon(DetailItem *detail)
+QVariant AngleHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
     return {};
 }
 
-void AngleHelper::connectDetailSignal(DetailItem *detail)
+void AngleHelper::connectPartSignal(PartItem *part)
 {
     // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
-    connect(detail, &DetailItem::materialAngleChanged, this, &AngleHelper::findChangedIndex);
+    connect(part, &PartItem::materialAngleChanged, this, &AngleHelper::findChangedIndex);
 }
 
 

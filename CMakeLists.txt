@@ -22,12 +22,12 @@ set(PROJECT_SOURCES
         controllerdialog.ui
         fillmode.h
         fillmode.cpp
-        detailitem.h
-        detailitem.cpp
+        partitem.h
+        partitem.cpp
         material.h
         material.cpp
-        detailmodel.h
-        detailmodel.cpp
+        partmodel.h
+        partmodel.cpp
         modenum.h
         modenum.cpp
         stylenum.h

@@ -11,7 +11,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    model(new DetailModel(0, this)),
+    model(new PartModel(0, this)),
     proxy(new QSortFilterProxyModel(this))
 {
     ui->setupUi(this);
@@ -41,7 +41,7 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     // Сохраняем геометрию окна:
-    QSettings settings("MMD18soft", "DetailParameteres");
+    QSettings settings("MMD18soft", "PartParameteres");
     settings.setValue("geometry", saveGeometry());
     QWidget::closeEvent(event);
 }
@@ -49,7 +49,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::readSettings()
 {
     // Восстанавливаем геометрию окна:
-    QSettings settings("MMD18soft", "DetailParameteres");
+    QSettings settings("MMD18soft", "PartParameteres");
     restoreGeometry(settings.value("geometry").toByteArray());
 }
 
@@ -58,22 +58,19 @@ void MainWindow::on_addLineButton_clicked()
     // Запускаем диалоговое окно контроллера:
     ControllerDialog controller(this);
     if(controller.exec()){
-        // Сохраняем данные из контроллера в виде DetailItem:
-        DetailItem* new_row = controller.getInsertedLine(this);
+        // Сохраняем данные из контроллера в виде PartItem:
+        PartItem* new_row = controller.getInsertedLine(this);
 
-        // Проверяем индекс новой строки:
-        int insert_idx = model->rowCount();
+        // Вставляем строку-деталь и передам владение модели
+        model->appendRow(new_row);
 
-        // Вставляем строку-деталь
-        model->insertRow(insert_idx, new_row);
-
-        // Чтобы проверить работу с DetailItem по указателю добавьте
+        // Чтобы проверить работу с PartItem по указателю добавьте
         // следующие строки после добавления детали в модель:
 //        new_row->setMaterialName("Changed Excluded part Bla Bla Bla");
 //        new_row->setCenter({99999, 126789, 21234});
 //        delete new_row;
 
-//        QTimer::singleShot(3000, this,[&](){
+//        QTimer::singleShot(3000, this,[&](){  // RV, TODO
 //            delete new_row;
 //        });
     }

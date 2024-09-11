@@ -6,11 +6,11 @@ class CenterHelper : public AbstractHelper
     Q_OBJECT
 public:
     // Конструктор:
-    CenterHelper(const QVector<DetailItem *> &details_ , const QVector<AbstractHelper *> &helpers_, QObject* parent = nullptr) :
-        AbstractHelper(details_, helpers_, parent){}
+    CenterHelper(const QVector<PartItem *> &parts_ , const QVector<AbstractHelper *> &helpers_, QObject* parent = nullptr) :
+        AbstractHelper(parts_, helpers_, parent){}
 
     // Переопределенные методы для каждого столбца:
-    QVariant getString(DetailItem* detail) override;
-    QVariant getIcon(DetailItem* detail) override;
-    void connectDetailSignal(DetailItem* detail) override;
+    QVariant getString(PartItem* part) override;
+    QVariant getIcon(PartItem* part) override;
+    void connectPartSignal(PartItem* part) override;
 };

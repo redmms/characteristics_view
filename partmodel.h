@@ -1,17 +1,17 @@
 #pragma once
-#include "detailitem.h"
+#include "partitem.h"
 #include "helpers/abstracthelper.h"
 #include <QAbstractTableModel>
 #include <QVector>
 
-class DetailModel : public QAbstractTableModel
+class PartModel : public QAbstractTableModel
 {
     Q_OBJECT
 private:
     // Приватные поля:
-    QVector<DetailItem*> details;  // Данные о деталях, содержимое таблицы
+    QVector<PartItem*> parts;  // Данные о деталях, содержимое таблицы
     const QVector<AbstractHelper*> helpers;  // Вспомогательные объекты
-    // для работы с полями DetailItem по индексу
+    // для работы с полями PartItem по индексу
     QVector<QString> headers;  // Заголовки таблицы
 
     // Метод валидации индексов:
@@ -20,19 +20,20 @@ private:
 
 public:
     // Конструктор:
-    explicit DetailModel(int rows = 0, QObject *parent = nullptr);
+    explicit PartModel(int rows = 0, QObject *parent = nullptr);
 
     // Публичные методы, rowCount, columnCount, data - обязательны для
     // представления:
-    int rowCount(const QModelIndex& parent  = QModelIndex()) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
-    bool insertRow(int row, DetailItem* detail);
+    bool insertRow(int row, PartItem* part);
+    bool appendRow(PartItem* part);  // Метод для удобства
     bool removeRow(int row);
     bool setHeaderData(int section, const QVariant &value);
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role) const override;
 
 private slots:
-    void detailDeleted(QObject* object);
+    void partDeleted(QObject* object);
 };

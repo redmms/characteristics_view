@@ -1,5 +1,5 @@
 #pragma once
-#include "detailmodel.h"
+#include "partmodel.h"
 #include <QMainWindow>
 #include <QString>
 #include <QSortFilterProxyModel>
@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow
 private:
     // Приватные поля:
     Ui::MainWindow* ui;  // Указатель на UI
-    DetailModel* model;  // Табличная модель с деталями, в иерархии
+    PartModel* model;  // Табличная модель с деталями, в иерархии
     QSortFilterProxyModel* proxy;  // Прокси модель сортировки, в иерархии
 
     // Приватные методы:

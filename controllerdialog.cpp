@@ -10,9 +10,10 @@
 ControllerDialog::ControllerDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ControllerDialog),
-    detail(nullptr),
+    part(nullptr),
     validator(new QRegularExpressionValidator(
-        QRegularExpression("^[0-9]{0,7}$"), this)),  // До 7 цифр, как во float
+        QRegularExpression("^[0-9]{0,7}$"), this)),  // До 7 цифр, как во float,
+    // не позволяет вводить - и +
     current_mode{MassMode}
 {
     ui->setupUi(this);
@@ -29,7 +30,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     modes[MassMode].setEdit({ui->massEdit, ui->xEdit, ui->yEdit,ui->zEdit,
                              ui->angleEdit});
     modes[MassMode].setDefaultFocusPtr(ui->massEdit);
-    modes[MassMode].setDefaultValue("0");
+    modes[MassMode].fillInDefaultValue("0");
     modes[MassMode].setEventFilterPtr(this);
 
     modes[DensityMode].setHide({ui->coordBox, ui->massFrame});
@@ -38,7 +39,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     modes[DensityMode].setDisable({});
     modes[DensityMode].setEdit({ui->densityEdit, ui->angleEdit});
     modes[DensityMode].setDefaultFocusPtr(ui->densityEdit);
-    modes[DensityMode].setDefaultValue("0");
+    modes[DensityMode].fillInDefaultValue("0");
     modes[DensityMode].setEventFilterPtr(this);
 
     modes[CopyMode].setHide({ui->coordBox});
@@ -47,8 +48,8 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     modes[CopyMode].setDisable({ui->massEdit, ui->densityEdit, ui->styleBox,
                                 ui->angleEdit, ui->materialEdit});
     modes[CopyMode].setEdit({ui->massEdit, ui->densityEdit, ui->angleEdit});
-    modes[CopyMode].setDefaultFocusPtr(ui->materialEdit);
-    modes[CopyMode].setDefaultValue("0");
+    modes[CopyMode].setDefaultFocusPtr(nullptr);
+    modes[CopyMode].fillInDefaultValue("0");
     modes[CopyMode].setEventFilterPtr(this);
 
     // Устанавливаем валидатор:
@@ -59,8 +60,8 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
 
     // Запускаем дефолтный режим:
     ui->materialEdit->installEventFilter(this);
-     modes[current_mode].turnOn();
-     modes[current_mode].fillInDefaultValues();
+    modes[current_mode].turnOn();
+    modes[current_mode].fillInDefaultValues();
 }
 
 ControllerDialog::~ControllerDialog()
@@ -69,11 +70,11 @@ ControllerDialog::~ControllerDialog()
     delete ui;
 }
 
-DetailItem *ControllerDialog::getInsertedLine(QObject *parent)
+PartItem *ControllerDialog::getInsertedLine(QObject *parent)
 {
     // Получаем введенные данные и передаем владение:
-    detail->setParent(parent);
-    return detail;
+    part->setParent(parent);
+    return part;
 }
 
 bool ControllerDialog::eventFilter(QObject *object, QEvent *event)
@@ -164,39 +165,39 @@ void ControllerDialog::on_applyButton_clicked()
 
     // Заполняем поля детали, которую потом передадим главному окну методом get
     // Диалог контроллера не динамический в MainWindow, поэтому не устанавливаем
-    // пока родителя для DetailItem(), это произойдет в DetailModel
-    detail = new DetailItem();
+    // пока родителя для PartItem(), это произойдет в PartModel
+    part = new PartItem();
 
     // Заполняем данные детали:
     switch(current_mode){
     case MassMode:
-        detail->setMethod(mode_nums[method]);
-        detail->setMass(input.value(ui->massEdit, "!").toInt());
+        part->setMethod(mode_nums[method]);
+        part->setMass(input.value(ui->massEdit, "!").toInt());
         if (ui->coordBox->isChecked()){
             QString x = input.value(ui->xEdit, "!");
             QString y = input.value(ui->yEdit, "!");
             QString z = input.value(ui->zEdit, "!");
             QVector3D center{x.toFloat(), y.toFloat(), z.toFloat()};
-            detail->setCenter(center);
+            part->setCenter(center);
         }
-        detail->setMaterialName(material);
-        detail->setMaterialStyle(style_nums[style]);
-        detail->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        part->setMaterialName(material);
+        part->setMaterialStyle(style_nums[style]);
+        part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
     case DensityMode:
-        detail->setMethod(mode_nums[method]);
-        detail->setDensity(input.value(ui->densityEdit, "!").toInt());
-        detail->setMaterialName(material);
-        detail->setMaterialStyle(style_nums[style]);
-        detail->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        part->setMethod(mode_nums[method]);
+        part->setDensity(input.value(ui->densityEdit, "!").toInt());
+        part->setMaterialName(material);
+        part->setMaterialStyle(style_nums[style]);
+        part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
     case CopyMode:
-        detail->setMethod(mode_nums[method]);
-        detail->setMass(input.value(ui->massEdit, "!").toInt());
-        detail->setDensity(input.value(ui->densityEdit, "!").toInt());
-        detail->setMaterialName(material);
-        detail->setMaterialStyle(style_nums[style]);
-        detail->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        part->setMethod(mode_nums[method]);
+        part->setMass(input.value(ui->massEdit, "!").toInt());
+        part->setDensity(input.value(ui->densityEdit, "!").toInt());
+        part->setMaterialName(material);
+        part->setMaterialStyle(style_nums[style]);
+        part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
     }
     accept();

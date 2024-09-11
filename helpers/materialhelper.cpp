@@ -1,19 +1,19 @@
 #include "materialhelper.h"
 
-QVariant MaterialHelper::getString(DetailItem *detail)
+QVariant MaterialHelper::getString(PartItem *part)
 {
     // Строка для Qt::DisplayRole:
-    return detail->materialShortNameToString();
+    return part->materialShortNameToString();
 }
 
-QVariant MaterialHelper::getIcon(DetailItem *detail)
+QVariant MaterialHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
     return {};
 }
 
-void MaterialHelper::connectDetailSignal(DetailItem *detail)
+void MaterialHelper::connectPartSignal(PartItem *part)
 {
     // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
-    connect(detail, &DetailItem::materialNameChanged, this, &MaterialHelper::findChangedIndex);
+    connect(part, &PartItem::materialNameChanged, this, &MaterialHelper::findChangedIndex);
 }

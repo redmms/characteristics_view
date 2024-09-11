@@ -1,20 +1,20 @@
 #include "densityhelper.h"
 
-QVariant DensityHelper::getString(DetailItem *detail)
+QVariant DensityHelper::getString(PartItem *part)
 {
     // Строка для Qt::DisplayRole:
-    return detail->densityToString();
+    return part->densityToString();
 }
 
-QVariant DensityHelper::getIcon(DetailItem *detail)
+QVariant DensityHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
     return {};
 }
 
-void DensityHelper::connectDetailSignal(DetailItem *detail)
+void DensityHelper::connectPartSignal(PartItem *part)
 {
     // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
-    connect(detail, &DetailItem::densityChanged, this, &DensityHelper::findChangedIndex);
+    connect(part, &PartItem::densityChanged, this, &DensityHelper::findChangedIndex);
 }
 

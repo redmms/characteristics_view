@@ -1,7 +1,7 @@
 #pragma once
 #include "fillmode.h"
 #include "modenum.h"
-#include "detailitem.h"
+#include "partitem.h"
 #include <QDialog>
 #include <QList>
 #include <QMap>
@@ -16,7 +16,7 @@ class ControllerDialog : public QDialog
 private:
     // Приватные поля:
     Ui::ControllerDialog *ui;  // Указатель на UI
-    DetailItem* detail;  // Введенные данные о детали
+    PartItem* part;  // Введенные данные о детали
     QRegularExpressionValidator* validator;  // Валидатор ввода
     QMap<ModeNum, FillMode> modes;  // Описание каждого режима ввода
     ModeNum current_mode;  // Текущий режим ввода
@@ -27,7 +27,7 @@ public:
     ~ControllerDialog();
 
     // Публичные методы:
-    DetailItem* getInsertedLine(QObject* parent);
+    PartItem* getInsertedLine(QObject* parent);
     bool eventFilter(QObject *object, QEvent *event);
 
 private slots:

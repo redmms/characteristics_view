@@ -8,7 +8,7 @@
 #include <QMap>
 #include <QIcon>
 
-class DetailItem : public QObject
+class PartItem : public QObject
 {
     Q_OBJECT
 private:
@@ -26,7 +26,7 @@ private:
 
 public:
     // Конструктор:
-    explicit DetailItem(QObject* parent = nullptr, ModeNum eval_method_ = NoneMode,
+    explicit PartItem(QObject* parent = nullptr, ModeNum eval_method_ = NoneMode,
                         int mass_ = -1, int density_ = -1,
                         QVector3D mass_center_ = {-1, -1, -1},
                         Material material_ = Material());
@@ -46,15 +46,20 @@ public:
     QVector3D getCenter();
     Material getMaterial();
 
+    // Сэттер для сброса значений в исходные,
+    // значения по умолчанию считаются невалидными
+    void setDefaultValues();
+
     // Сэттеры со встроенной валидацией:
-    bool setMethod(ModeNum eval_method_ = NoneMode); // rv bool ok?
-    bool setMass(int mass_ = -1);
-    bool setDensity(int density_ = -1);
-    bool setCenter(QVector3D mass_center_ = {-1, -1, -1});
-    bool setMaterial(Material material_ = Material());
-    bool setMaterialName(QString material_name_ = ""); // should I exclude it?
-    bool setMaterialStyle(HatchStyleNum style_ = NoneStyle);
-    bool setMaterialAngle(int angle_ = -1);
+    bool setMethod(ModeNum eval_method_);
+    bool setMass(int mass_);
+    bool setDensity(int density_);
+    bool setCenter(QVector3D mass_center_);
+    bool setMaterial(Material material_);  // Метод для удобства
+    bool setMaterialName(QString material_name_);  // Потенциально можно
+                                                   // использовать в модели
+    bool setMaterialStyle(HatchStyleNum style_);
+    bool setMaterialAngle(int angle_);
 
     // Методы преобразования в строку для каждого поля, даже если оно уже
     // строка. Сделано для удобства вызова из хэлперов модели.
@@ -63,7 +68,7 @@ public:
     QString densityToString();
     QString centerToString();
     QString materialNameToString();  // Не используется в модели
-    QString materialShortNameToString();
+    QString materialShortNameToString();  // Используется в модели
     QString materialStyleToString();
     QString materialAngleToString();
 

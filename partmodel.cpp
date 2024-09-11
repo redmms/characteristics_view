@@ -1,4 +1,4 @@
-#include "detailmodel.h"
+#include "partmodel.h"
 #include "material.h"
 #include "helpers/anglehelper.h"
 #include "helpers/centerhelper.h"
@@ -8,16 +8,16 @@
 #include "helpers/methodhelper.h"
 #include "helpers/stylehelper.h"
 
-DetailModel::DetailModel(int rows, QObject *parent) :
-    details{rows, {}},
+PartModel::PartModel(int rows, QObject *parent) :
+    parts{rows, {}},
     helpers{
-        new MethodHelper(details, helpers, this),
-        new MassHelper(details, helpers, this),
-        new DensityHelper(details, helpers, this),
-        new CenterHelper(details, helpers, this),
-        new MaterialHelper(details, helpers, this),
-        new StyleHelper(details, helpers, this),
-        new AngleHelper(details, helpers, this)
+        new MethodHelper(parts, helpers, this),
+        new MassHelper(parts, helpers, this),
+        new DensityHelper(parts, helpers, this),
+        new CenterHelper(parts, helpers, this),
+        new MaterialHelper(parts, helpers, this),
+        new StyleHelper(parts, helpers, this),
+        new AngleHelper(parts, helpers, this)
     },
     headers{
         "способ расчёта", // please, add translations for these phrazes
@@ -30,33 +30,33 @@ DetailModel::DetailModel(int rows, QObject *parent) :
     }
 {}
 
-bool DetailModel::isValidRow(int row) const
+bool PartModel::isValidRow(int row) const
 {
     // Проверка индекса строки:
-    return row >= 0 && row < details.size();
+    return row >= 0 && row < parts.size();
 }
 
-bool DetailModel::isValidColumn(int column) const
+bool PartModel::isValidColumn(int column) const
 {
     // Проверка индекса столбца:
     return column >= 0 && column < helpers.size();
 }
 
-int DetailModel::rowCount(const QModelIndex& parent) const
+int PartModel::rowCount(const QModelIndex& parent) const
 {
     // Количество строк:
     Q_UNUSED(parent)
-    return details.size();
+    return parts.size();
 }
 
-int DetailModel::columnCount(const QModelIndex& parent) const
+int PartModel::columnCount(const QModelIndex& parent) const
 {
     // Количество колонок:
     Q_UNUSED(parent)
     return helpers.size();
 }
 
-QVariant DetailModel::data(const QModelIndex &index, int role) const
+QVariant PartModel::data(const QModelIndex &index, int role) const
 {
     // Метод для отображения ячеек в представлении
 
@@ -72,46 +72,52 @@ QVariant DetailModel::data(const QModelIndex &index, int role) const
     // Свой хэлпер для каждой колонки, своя деталь для каждой строки:
     switch (role) {
     case Qt::DisplayRole:
-        return helpers[j]->getString(details[i]);
+        return helpers[j]->getString(parts[i]);
     case Qt::ToolTipRole:
         return headers[j];
     case Qt::DecorationRole:
-        return helpers[j]->getIcon(details[i]);
+        return helpers[j]->getIcon(parts[i]);
     default:
         return {};
     }
 }
 
-bool DetailModel::insertRow(int row, DetailItem *detail) // should we
+bool PartModel::insertRow(int row, PartItem *part) // should we
 // check the pointer before adding, or when using?
 {
     // Метод вставки строки
     // Проверяем аргументы:
-    if (row < 0 || !detail){
+    if (row < 0 || !part){
         return false;
     }
 
     // Сразу же забираем владение объектом:
-    detail->setParent(this);
+    part->setParent(this);
 
     // Подключаем сигналы изменения полей детали, они же ячейки:
     for (auto helper : helpers){
-        helper->connectDetailSignal(detail);
+        helper->connectPartSignal(part);
         connect(helper, &AbstractHelper::dataChanged, this, &QAbstractItemModel::dataChanged); // should be abstract or not?
     }
 
     // Подключаем сигнал удаления детали:
-    connect(detail, &DetailItem::destroyed, this, &DetailModel::detailDeleted);
+    connect(part, &PartItem::destroyed, this, &PartModel::partDeleted);
 
     // Вставлем строки-детали и уведомляем представление
     beginInsertRows(QModelIndex(), row, row); // "Уведомление"
-    details.insert(row, detail);
+    parts.insert(row, part);
     endInsertRows();
 
     return true;
 }
 
-bool DetailModel::removeRow(int row)
+bool PartModel::appendRow(PartItem *part)
+{
+    int row = parts.size();
+    insertRow(row, part);
+}
+
+bool PartModel::removeRow(int row)
 {
     // Метод удаления строки
     // Проверяем аргументы:
@@ -121,12 +127,12 @@ bool DetailModel::removeRow(int row)
 
     // Удаляем строки-детали и уведомляем представление
     beginRemoveRows(QModelIndex(), row, row);
-    details.remove(row);
+    parts.remove(row);
     endRemoveRows();
     return true;
 }
 
-bool DetailModel::setHeaderData(int section, const QVariant &value)
+bool PartModel::setHeaderData(int section, const QVariant &value)
 {
     // Сэттер для заголовка таблицы
     // Проверяем аргументы:
@@ -140,7 +146,7 @@ bool DetailModel::setHeaderData(int section, const QVariant &value)
     return true;
 }
 
-QVariant DetailModel::headerData(int section, Qt::Orientation orientation,
+QVariant PartModel::headerData(int section, Qt::Orientation orientation,
                                  int role) const
 {
     // Метод для отображения ячеек заголовка в представлении
@@ -158,12 +164,12 @@ QVariant DetailModel::headerData(int section, Qt::Orientation orientation,
     }
 }
 
-void DetailModel::detailDeleted(QObject *object)
+void PartModel::partDeleted(QObject *object)
 {
     // Очищаем строку из-под удаленной по указателю детали:
-//    DetailItem* detail = qobject_cast<DetailItem*>(object);  // RV - should we check that или это лишнее?
+//    PartItem* part = qobject_cast<PartItem*>(object);  // RV - should we check that или это лишнее?
 
-    removeRow(details.indexOf((DetailItem*)object)); // TODO
+    removeRow(parts.indexOf((PartItem*)object)); // TODO
 
 }
 

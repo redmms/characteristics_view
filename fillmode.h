@@ -39,7 +39,7 @@ public:
     void turnOn();
     void turnOff();
     QMap<QLineEdit*, QString> getText();
-    void setDefaultValue(QLineEdit* uiptr, QString defval);
+    void fillInDefaultValue(QLineEdit* uiptr, QString defval);
     void clearDefaultValues();
     void fillInDefaultValues();
     void activateDefaultFocus();
@@ -51,7 +51,7 @@ public:
     void setDisable(QList<QWidget*> disable_ptrs_);
     void setEdit(QList<QLineEdit*> edit_ptrs_);
     void setDefaultFocusPtr(QLineEdit* default_focus_ptr_);
-    void setDefaultValue(QString default_value_);
+    void fillInDefaultValue(QString default_value_);
     void setDefaultValues(InputData default_values_);
     void setEventFilterPtr(QObject* event_filter_);
 };

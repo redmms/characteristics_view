@@ -1,20 +1,20 @@
 #include "masshelper.h"
 
-QVariant MassHelper::getString(DetailItem *detail)
+QVariant MassHelper::getString(PartItem *part)
 {
     // Строка для Qt::DisplayRole:
-    return detail->massToString();
+    return part->massToString();
 }
 
-QVariant MassHelper::getIcon(DetailItem *detail)
+QVariant MassHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
     return {};
 }
 
-void MassHelper::connectDetailSignal(DetailItem *detail)
+void MassHelper::connectPartSignal(PartItem *part)
 {
     // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
-    connect(detail, &DetailItem::massChanged, this, &MassHelper::findChangedIndex);
+    connect(part, &PartItem::massChanged, this, &MassHelper::findChangedIndex);
 }
 

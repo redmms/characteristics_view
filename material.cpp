@@ -4,6 +4,7 @@
 Material::Material(QObject *parent, QString name_,
                    HatchStyleNum hatch_style_, int hatch_angle_
                    ) :
+    QObject(parent),
     name(name_),
     hatch_style(hatch_style_),
     hatch_angle(hatch_angle_)
@@ -12,6 +13,13 @@ Material::Material(QObject *parent, QString name_,
 Material::Material(const Material &other)
 {
     // Конструктор копирования для содержимого, без сигналов
+    name = other.name;
+    hatch_style = other.hatch_style;
+    hatch_angle = other.hatch_angle;
+}
+
+bool Material::operator=(const Material &other)
+{
     name = other.name;
     hatch_style = other.hatch_style;
     hatch_angle = other.hatch_angle;

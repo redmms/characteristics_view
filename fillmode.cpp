@@ -91,7 +91,7 @@ QMap<QLineEdit*, QString> FillMode::getText()
     return line_edit_input;
 }
 
-void FillMode::setDefaultValue(QLineEdit *uiptr, QString defval)
+void FillMode::fillInDefaultValue(QLineEdit *uiptr, QString defval)
 {
     // Заполняем поле ввода значением по умолчанию:
     default_values[uiptr] = defval;
@@ -155,7 +155,7 @@ void FillMode::setDefaultFocusPtr(QLineEdit *default_focus_ptr_)
     default_focus_ptr = default_focus_ptr_;
 }
 
-void FillMode::setDefaultValue(QString default_value_)
+void FillMode::fillInDefaultValue(QString default_value_)
 {
     default_value = default_value_;
 }

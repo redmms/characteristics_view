@@ -1,20 +1,20 @@
 #include "abstracthelper.h"
 
-AbstractHelper::AbstractHelper(const QVector<DetailItem *> &details_, const QVector<AbstractHelper *> &helpers_, QObject *parent) :
+AbstractHelper::AbstractHelper(const QVector<PartItem *> &parts_, const QVector<AbstractHelper *> &helpers_, QObject *parent) :
     QObject{parent},
-    details(details_),
+    parts(parts_),
     helpers(helpers_)
 {}
 
 void AbstractHelper::findChangedIndex()
 {
     // Определяем изменившуюся ячейку:
-    DetailItem* detail = qobject_cast<DetailItem*>(sender());
+    PartItem* part = qobject_cast<PartItem*>(sender());
 
     // Находим индекс ячейки:
     // Такой подход не самый быстродейственный, но зато не требует лишнего
     // места и не зависит от добавления/удаления строк в таблице
-    int i = details.indexOf(detail);
+    int i = parts.indexOf(part);
     int j = helpers.indexOf(this);
 
     // Отправляем сигнал с нужной сигнатурой представлению:

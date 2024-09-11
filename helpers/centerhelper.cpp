@@ -1,20 +1,20 @@
 #include "centerhelper.h"
 
-QVariant CenterHelper::getString(DetailItem *detail)
+QVariant CenterHelper::getString(PartItem *part)
 {
     // Строка для Qt::DisplayRole:
-    return detail->centerToString();
+    return part->centerToString();
 }
 
-QVariant CenterHelper::getIcon(DetailItem *detail)
+QVariant CenterHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
     return {};
 }
 
-void CenterHelper::connectDetailSignal(DetailItem *detail)
+void CenterHelper::connectPartSignal(PartItem *part)
 {
     // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
-    connect(detail, &DetailItem::centerChanged, this, &CenterHelper::findChangedIndex);
+    connect(part, &PartItem::centerChanged, this, &CenterHelper::findChangedIndex);
 }
 

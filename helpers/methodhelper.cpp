@@ -1,19 +1,19 @@
 #include "methodhelper.h"
 
-QVariant MethodHelper::getString(DetailItem *detail)
+QVariant MethodHelper::getString(PartItem *part)
 {
     // Строка для Qt::DisplayRole:
-    return detail->methodToString();
+    return part->methodToString();
 }
 
-QVariant MethodHelper::getIcon(DetailItem *detail)
+QVariant MethodHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
-    return detail->getMethodIcon();
+    return part->getMethodIcon();
 }
 
-void MethodHelper::connectDetailSignal(DetailItem *detail)
+void MethodHelper::connectPartSignal(PartItem *part)
 {
     // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
-    connect(detail, &DetailItem::methodChanged, this, &MethodHelper::findChangedIndex);
+    connect(part, &PartItem::methodChanged, this, &MethodHelper::findChangedIndex);
 }

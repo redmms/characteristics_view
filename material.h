@@ -17,11 +17,14 @@ private:
 
 public:
     // Конструкторы:
-    explicit Material(QObject* parent = nullptr, QString name_ = "",
+    Material(QObject* parent = nullptr, QString name_ = "",
                       HatchStyleNum hatch_style_ = NoneStyle,
                       int hatch_angle_ = -1
                       );
     Material(const Material& other);
+
+    // Оператор копирования полей без сигналов:
+    bool operator=(const Material& other);
 
     // Геттеры:
     QString getName();

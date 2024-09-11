@@ -1,7 +1,7 @@
-#include "detailitem.h"
+#include "partitem.h"
 #include <QDebug>
 
-DetailItem::DetailItem(QObject *parent, ModeNum eval_method_, int mass_,
+PartItem::PartItem(QObject *parent, ModeNum eval_method_, int mass_,
                        int density_, QVector3D mass_center_, Material material_
                        ) :
     eval_method(eval_method_),
@@ -12,44 +12,44 @@ DetailItem::DetailItem(QObject *parent, ModeNum eval_method_, int mass_,
 {
     // Подключаем слоты Material:
     connect(&material, &Material::nameChanged, this,
-            &DetailItem::materialNameChanged);
+            &PartItem::materialNameChanged);
     connect(&material, &Material::styleChanged, this,
-            &DetailItem::materialStyleChanged);
+            &PartItem::materialStyleChanged);
     connect(&material, &Material::angleChanged, this,
-            &DetailItem::materialAngleChanged);
+            &PartItem::materialAngleChanged);
 }
 
-bool DetailItem::isValidNum(int num)
+bool PartItem::isValidNum(int num)
 {
     // Валидация чисел по умолчанию:
     return num >= 0;
 }
 
-bool DetailItem::isValidMethod(ModeNum method_)
+bool PartItem::isValidMethod(ModeNum method_)
 {
     // Валидация enum:
     return method_ >= 0 && method_ < NoneMode;
 }
 
-bool DetailItem::isValidMass(int mass_)
+bool PartItem::isValidMass(int mass_)
 {
     // Валидация по умолчанию:
     return isValidNum(mass_);
 }
 
-bool DetailItem::isValidDensity(int density_)
+bool PartItem::isValidDensity(int density_)
 {
     // Валидация по умолчанию:
     return isValidNum(density_);
 }
 
-bool DetailItem::isValidCoord(int coord)
+bool PartItem::isValidCoord(int coord)
 {
     // Валидация по умолчанию:
     return isValidNum(coord);
 }
 
-bool DetailItem::isValidIcon(QIcon icon_)
+bool PartItem::isValidIcon(QIcon icon_)
 {
     // Проверка иконки на пустоту и невалидный путь:
     static const int w = 70;  // here 70 x 70 is calc_n.png size
@@ -57,7 +57,7 @@ bool DetailItem::isValidIcon(QIcon icon_)
     return !icon_.isNull() && !icon_.pixmap(w, h).isNull();
 }
 
-bool DetailItem::isValidCenter(QVector3D mass_center_)
+bool PartItem::isValidCenter(QVector3D mass_center_)
 {
     // Валидация по умолчанию:
     return isValidCoord(mass_center_.x()) &&
@@ -65,32 +65,43 @@ bool DetailItem::isValidCenter(QVector3D mass_center_)
            isValidCoord(mass_center_.z());
 }
 
-ModeNum DetailItem::getMethod()
+ModeNum PartItem::getMethod()
 {
     return eval_method;
 }
 
-int DetailItem::getMass()
+int PartItem::getMass()
 {
     return mass;
 }
 
-int DetailItem::getDensity()
+int PartItem::getDensity()
 {
     return density;
 }
 
-QVector3D DetailItem::getCenter()
+QVector3D PartItem::getCenter()
 {
     return mass_center;
 }
 
-Material DetailItem::getMaterial()
+Material PartItem::getMaterial()
 {
     return material;
 }
 
-bool DetailItem::setMethod(ModeNum eval_method_)
+void PartItem::setDefaultValues()
+{
+    // Сэттер для сброса значений в исходные,
+    // значения по умолчанию считаются невалидными
+    eval_method = NoneMode;
+    mass = -1;
+    density = -1;
+    mass_center = {-1, -1, -1};
+    material = {};  // Вызывается конструктор по умолчанию
+}
+
+bool PartItem::setMethod(ModeNum eval_method_)
 {
     // Сэттер способа расчета:
     bool success = eval_method != eval_method_ && isValidMethod(eval_method_);
@@ -101,7 +112,7 @@ bool DetailItem::setMethod(ModeNum eval_method_)
     return success;
 }
 
-bool DetailItem::setMass(int mass_)
+bool PartItem::setMass(int mass_)
 {
     // Сэттер массы:
     bool success = mass != mass_ && isValidMass(mass_);
@@ -112,7 +123,7 @@ bool DetailItem::setMass(int mass_)
     return success;
 }
 
-bool DetailItem::setDensity(int density_)
+bool PartItem::setDensity(int density_)
 {
     // Сэттер плотности:
     bool success = density != density_ && isValidDensity(density_);
@@ -123,7 +134,7 @@ bool DetailItem::setDensity(int density_)
     return success;
 }
 
-bool DetailItem::setCenter(QVector3D mass_center_)
+bool PartItem::setCenter(QVector3D mass_center_)
 {
     // Сэттер центра масс:
     bool success = mass_center != mass_center_ && isValidCenter(mass_center_);
@@ -134,7 +145,7 @@ bool DetailItem::setCenter(QVector3D mass_center_)
     return success;
 }
 
-bool DetailItem::setMaterial(Material material_)
+bool PartItem::setMaterial(Material material_)
 {
     // Сэттер поля Material:
     return setMaterialName(material_.getName()) &&
@@ -142,43 +153,43 @@ bool DetailItem::setMaterial(Material material_)
            setMaterialStyle(material_.getStyle());
 }
 
-bool DetailItem::setMaterialName(QString material_name_)
+bool PartItem::setMaterialName(QString material_name_)
 {
     // Сэттер названия материала:
     return material.setName(material_name_);
 }
 
-bool DetailItem::setMaterialStyle(HatchStyleNum style_)
+bool PartItem::setMaterialStyle(HatchStyleNum style_)
 {
     // Сэттер стиля штриховки:
     return material.setStyle(style_);
 }
 
-bool DetailItem::setMaterialAngle(int angle_)
+bool PartItem::setMaterialAngle(int angle_)
 {
     // Сэттер угла штриховки:
     return material.setAngle(angle_);
 }
 
-QString DetailItem::methodToString()
+QString PartItem::methodToString()
 {
     // Преобразование в строку:
     return isValidMethod(eval_method) ? mode_names[eval_method] : "";
 }
 
-QString DetailItem::massToString()
+QString PartItem::massToString()
 {
     // Преобразование в строку:
     return isValidMass(mass) ? QString::number(mass) : "";
 }
 
-QString DetailItem::densityToString()
+QString PartItem::densityToString()
 {
     // Преобразование в строку:
     return isValidDensity(density) ? QString::number(density) : "";
 }
 
-QString DetailItem::centerToString()
+QString PartItem::centerToString()
 {
     // Преобразование в строку:
     QString result = "";
@@ -191,31 +202,31 @@ QString DetailItem::centerToString()
     return result;
 }
 
-QString DetailItem::materialNameToString()
+QString PartItem::materialNameToString()
 {
     // Преобразование в строку:
     return material.nameToString();
 }
 
-QString DetailItem::materialStyleToString()
+QString PartItem::materialStyleToString()
 {
     // Преобразование в строку:
     return material.styleToString();
 }
 
-QString DetailItem::materialAngleToString()
+QString PartItem::materialAngleToString()
 {
     // Преобразование в строку:
     return material.angleToString();
 }
 
-QString DetailItem::materialShortNameToString()
+QString PartItem::materialShortNameToString()
 {
     // Преобразование в строку:
     return material.shortNameToString();
 }
 
-QIcon DetailItem::getMethodIcon()
+QIcon PartItem::getMethodIcon()
 {
     QIcon result(mode_icon_paths[eval_method]);
     if (!isValidIcon(result)){
@@ -224,7 +235,7 @@ QIcon DetailItem::getMethodIcon()
     return result;
 }
 
-QIcon DetailItem::getMaterialStyleIcon()
+QIcon PartItem::getMaterialStyleIcon()
 {
     return material.getStyleIcon();
 }

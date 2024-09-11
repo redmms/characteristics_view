@@ -28,6 +28,86 @@
 	background: #f0f0f0;
 }
 
+ControllerDialog{
+	background: #f0f0f0;
+}
+
+QAbstractItemView{
+	color: black;
+    selection-background-color: #22cce7;
+}
+
+QLineEdit{
+	color: black;
+    selection-background-color: #22cce7;
+	border:  2 solid #b0b0b0;
+}
+
+QLineEdit:disabled{
+	color: black;
+	background: #f0f0f0;
+}
+
+QComboBox{
+	color: black;
+    selection-background-color: #22cce7;
+	border:  2 solid #b0b0b0;
+}
+
+QComboBox:disabled, QAbstractItemView:disabled, QTextEdit:disabled{
+	color: black;
+	background: #f0f0f0;
+}
+
+QComboBox:on{
+	border: 2 solid #22cce7;
+}
+
+QComboBox::drop-down{
+	background: transparent;
+}
+
+QComboBox::down-arrow{
+	image: url(&quot;:/icons/styles/drop_down_arrow.png&quot;);
+	width: 7;
+	height: 7;
+}
+
+QComboBox::down-arrow:on {
+	image: url(&quot;:/icons/styles/drop_down_arrow_up.png&quot;);
+	width: 7;
+	height: 7;
+}
+
+QLabel:disabled{
+    color: black;
+}
+
+QGroupBox {
+    border: 0;
+	background: transparent;
+    margin-top: 20px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top right;
+    padding: 0 3px;
+	margin: 8;
+    padding-right: 150px;
+}
+
+QGroupBox::indicator {
+	background: #f0f0f0;
+    border: 2px solid black;  
+    width: 15px;             
+    height: 15px;           
+}
+
+QGroupBox::indicator::checked {
+	 image: url(&quot;:/icons/styles/checkbox_arrow.png&quot;); 
+}
+
 QPushButton {
     border: 1px solid #c8c8c8;
     background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, 
@@ -40,9 +120,22 @@ QPushButton:pressed{
                                 stop:0 #e5e5e5, stop:1 white);
 }
 
-QAbstractItemView{
-    selection-background-color: #22cce7;
-}</string>
+QMessageBox QPushButton {
+	width: 100;
+	height: 26;
+    border: 1px solid #c8c8c8;
+    background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, 
+                                stop:0 #e5e5e5, stop:1 white);
+}
+
+QMessageBox QPushButton:pressed{
+	width: 100;
+	height: 26;
+	border: 2 solid #22cce7;
+	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, 
+                                stop:0 #e5e5e5, stop:1 white);
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
