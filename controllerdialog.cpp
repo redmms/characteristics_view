@@ -71,7 +71,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     // Запускаем дефолтный режим:
     ui->materialEdit->installEventFilter(this);
     modes[current_mode]->turnOn();
-    modes[current_mode]->fillInDefVals();
+    modes[current_mode]->fillInDefaultValues();
 }
 
 ControllerDialog::~ControllerDialog()
@@ -80,9 +80,10 @@ ControllerDialog::~ControllerDialog()
     delete ui;
 }
 
-DetailItem* ControllerDialog::getInsertedLine()
+DetailItem *ControllerDialog::getInsertedLine(QObject *parent)
 {
-    // Получаем введенные данные:
+    // Получаем введенные данные и передаем владение:
+    detail->setParent(parent);
     return detail;
 }
 
@@ -215,11 +216,11 @@ void ControllerDialog::on_applyButton_clicked()
 void ControllerDialog::on_methodBox_currentIndexChanged(int index)
 {
     // Меняем режим ввода:
-    ModeNum new_mode = ModeNum(index);
+    ModeNum new_mode = ModeNum(index);   
     modes[current_mode]->turnOff();
     modes[new_mode]->turnOn();
-    modes[new_mode]->fillInDefVals();
-    modes[new_mode]->setDefFocus();
+    modes[new_mode]->fillInDefaultValues();
+    modes[new_mode]->setDefaultFocus();
     current_mode = new_mode;
 }
 

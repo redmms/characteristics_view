@@ -93,7 +93,7 @@ Material DetailItem::getMaterial()
 bool DetailItem::setMethod(ModeNum eval_method_)
 {
     // Сэттер способа расчета:
-    bool success = isValidMethod(eval_method_);
+    bool success = eval_method != eval_method_ && isValidMethod(eval_method_);
     if (success){
         eval_method = eval_method_;
         emit methodChanged();
@@ -104,7 +104,7 @@ bool DetailItem::setMethod(ModeNum eval_method_)
 bool DetailItem::setMass(int mass_)
 {
     // Сэттер массы:
-    bool success = isValidMass(mass_); // add mode checks? no, no need
+    bool success = mass != mass_ && isValidMass(mass_);
     if (success){
         mass = mass_;
         emit massChanged();
@@ -115,7 +115,7 @@ bool DetailItem::setMass(int mass_)
 bool DetailItem::setDensity(int density_)
 {
     // Сэттер плотности:
-    bool success = isValidDensity(density_);
+    bool success = density != density_ && isValidDensity(density_);
     if (success){
         density = density_;
         emit densityChanged();
@@ -123,10 +123,10 @@ bool DetailItem::setDensity(int density_)
     return success;
 }
 
-bool DetailItem::setCenter(QVector3D mass_center_) // ?
+bool DetailItem::setCenter(QVector3D mass_center_)
 {
     // Сэттер центра масс:
-    bool success = isValidCenter(mass_center_);
+    bool success = mass_center != mass_center_ && isValidCenter(mass_center_);
     if (success){
         mass_center = mass_center_;
         emit centerChanged();

@@ -27,7 +27,7 @@ public:
     ~ControllerDialog();
 
     // Публичные методы:
-    DetailItem* getInsertedLine();
+    DetailItem* getInsertedLine(QObject* parent);
     bool eventFilter(QObject *object, QEvent *event);
 
 private slots:

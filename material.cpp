@@ -80,8 +80,8 @@ bool Material::isValid()
 
 bool Material::setName(QString name_)
 {
-    // Сэттер со встроенной валидацией:   
-    bool success = isValidName(name_);
+    // Сэттер со встроенной валидацией:
+    bool success = name != name_ && isValidName(name_);
     if (success){
         name = name_;
         short_name = name_.split(' ')[0];
@@ -93,7 +93,7 @@ bool Material::setName(QString name_)
 bool Material::setStyle(HatchStyleNum style_)
 {
     // Сэттер со встроенной валидацией:
-    bool success = isValidStyle(style_);
+    bool success = hatch_style != style_ && isValidStyle(style_);
     if (success){
         hatch_style = style_;
         emit styleChanged();
@@ -104,7 +104,7 @@ bool Material::setStyle(HatchStyleNum style_)
 bool Material::setAngle(int angle_)
 {
     // Сэттер со встроенной валидацией:
-    bool success = isValidAngle(angle_);
+    bool success = hatch_angle != angle_ && isValidAngle(angle_);
     if (success){
         hatch_angle = angle_;
         emit angleChanged();

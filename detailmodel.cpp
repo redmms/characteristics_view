@@ -1,5 +1,4 @@
 #include "detailmodel.h"
-#include "enums.h"
 #include "material.h"
 #include "helpers/anglehelper.h"
 #include "helpers/centerhelper.h"

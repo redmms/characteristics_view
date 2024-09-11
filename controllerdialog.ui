@@ -51,6 +51,11 @@ QComboBox{
 	border:  2 solid #b0b0b0;
 }
 
+QComboBox:disabled, QAbstractItemView:disabled, QTextEdit:disabled{
+	color: black;
+	background: #f0f0f0;
+}
+
 QComboBox:on{
 	border: 2 solid #22cce7;
 }
@@ -71,14 +76,9 @@ QComboBox::down-arrow:on {
 	height: 7;
 }
 
-QComboBox QAbstractItemView QTextEdit {
+QComboBox QAbstractItemView {
 	color: black;
     selection-background-color: #22cce7;
-}
-
-QComboBox QAbstractItemView QTextEdit:disabled{
-	color: black;
-	background: #f0f0f0;
 }
 
 QLabel:disabled{

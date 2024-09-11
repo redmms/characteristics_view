@@ -58,7 +58,7 @@ void MainWindow::on_addLineButton_clicked()
     ControllerDialog controller(this);
     if(controller.exec()){
         // Сохраняем данные из контроллера в виде DetailItem:
-        DetailItem* new_row = controller.getInsertedLine();
+        DetailItem* new_row = controller.getInsertedLine(this);
 
         // Проверяем индекс строки:
         int insert_idx = ui->tableView->currentIndex().row() + 1;
