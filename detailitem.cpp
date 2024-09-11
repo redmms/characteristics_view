@@ -28,7 +28,7 @@ bool DetailItem::isValidNum(int num)
 bool DetailItem::isValidMethod(ModeNum method_)
 {
     // Валидация enum:
-    return method_ >= 0 && method_ < none_mode;
+    return method_ >= 0 && method_ < NoneMode;
 }
 
 bool DetailItem::isValidMass(int mass_)
@@ -47,6 +47,22 @@ bool DetailItem::isValidCoord(int coord)
 {
     // Валидация по умолчанию:
     return isValidNum(coord);
+}
+
+bool DetailItem::isValidIcon(QIcon icon_)
+{
+    // Проверка иконки на пустоту и невалидный путь:
+    static const int w = 70;  // here 70 x 70 is calc_n.png size
+    static const int h = 70;
+    return !icon_.isNull() && !icon_.pixmap(w, h).isNull();
+}
+
+bool DetailItem::isValidCenter(QVector3D mass_center_)
+{
+    // Валидация по умолчанию:
+    return isValidCoord(mass_center_.x()) &&
+           isValidCoord(mass_center_.y()) &&
+           isValidCoord(mass_center_.z());
 }
 
 ModeNum DetailItem::getMethod()
@@ -121,15 +137,15 @@ bool DetailItem::setCenter(QVector3D mass_center_) // ?
 bool DetailItem::setMaterial(Material material_)
 {
     // Сэттер поля Material:
-    setMaterialName(material_.getName());
-    return setMaterialAngle(material_.getAngle()) &&
+    return setMaterialName(material_.getName()) &&
+           setMaterialAngle(material_.getAngle()) &&
            setMaterialStyle(material_.getStyle());
 }
 
-void DetailItem::setMaterialName(QString material_name_)
+bool DetailItem::setMaterialName(QString material_name_)
 {
     // Сэттер названия материала:
-    material.setName(material_name_);
+    return material.setName(material_name_);
 }
 
 bool DetailItem::setMaterialStyle(HatchStyleNum style_)
@@ -197,21 +213,6 @@ QString DetailItem::materialShortNameToString()
 {
     // Преобразование в строку:
     return material.shortNameToString();
-}
-
-bool DetailItem::isValidIcon(QIcon icon_)
-{
-    // Проверка иконки на пустоту и невалидный путь:
-    return !icon_.isNull() && !icon_.pixmap(70, 70).isNull();
-    // here 70 x 70 is calc_n.png size
-}
-
-bool DetailItem::isValidCenter(QVector3D mass_center_)
-{
-    // Валидация по умолчанию:
-    return isValidCoord(mass_center_.x()) &&
-           isValidCoord(mass_center_.y()) &&
-           isValidCoord(mass_center_.z());
 }
 
 QIcon DetailItem::getMethodIcon()

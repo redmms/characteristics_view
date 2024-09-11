@@ -12,5 +12,6 @@
         <file>icons/window_icons/mainwindow_icon.png</file>
         <file>icons/styles/checkbox_arrow.png</file>
         <file>icons/styles/drop_down_arrow.png</file>
+        <file>icons/styles/drop_down_arrow_up.png</file>
     </qresource>
 </RCC>

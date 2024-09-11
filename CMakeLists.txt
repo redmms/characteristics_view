@@ -28,8 +28,10 @@ set(PROJECT_SOURCES
         material.cpp
         detailmodel.h
         detailmodel.cpp
-        enums.h
-        enums.cpp
+        modenum.h
+        modenum.cpp
+        stylenum.h
+        stylenum.cpp
         helpers/abstracthelper.h
         helpers/abstracthelper.cpp
         helpers/methodhelper.h

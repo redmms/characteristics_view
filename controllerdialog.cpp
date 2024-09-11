@@ -14,14 +14,14 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     detail(nullptr),
     validator(new QRegularExpressionValidator(
         QRegularExpression("^[0-9]{0,7}$"), this)),  // До 7 цифр, как во float
-    current_mode{mass_mode}
+    current_mode{MassMode}
 {
     ui->setupUi(this);
 
     // Определяем то, что зависит от UI:
     modes = {
         {
-            mass_mode,
+            MassMode,
             new FillMode(
                 {ui->densityFrame},
                 {ui->coordBox, ui->massFrame}, // Here we only enlist those widgets that can differ from usual dialog state
@@ -34,7 +34,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
                 )
         },
             {
-                density_mode,
+                DensityMode,
                 new FillMode(
                     {ui->coordBox, ui->massFrame}, // it is better to make it by Mode::setSomeList();
                     {ui->densityFrame},
@@ -47,7 +47,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
                     )
             },
         {
-            copy_mode,
+            CopyMode,
                 new FillMode(
                     {ui->coordBox}, // hide
                     {ui->massFrame, ui->densityFrame},  // show
@@ -125,7 +125,7 @@ void ControllerDialog::on_applyButton_clicked()
 
     // Проверяем ввод на пустые значения:
     QList<QLineEdit*> empty_edits;
-    if (current_mode != copy_mode){
+    if (current_mode != CopyMode){
         for (auto it = input.begin(); it != input.end(); ++it) {
             QString val = it.value();
             if (it.key() == ui->xEdit || it.key() == ui->yEdit ||
@@ -179,7 +179,7 @@ void ControllerDialog::on_applyButton_clicked()
 
     // Заполняем данные детали:
     switch(current_mode){
-    case mass_mode:
+    case MassMode:
         detail->setMethod(mode_nums[method]);
         detail->setMass(input.value(ui->massEdit, "!").toInt());
         if (ui->coordBox->isChecked()){
@@ -193,14 +193,14 @@ void ControllerDialog::on_applyButton_clicked()
         detail->setMaterialStyle(style_nums[style]);
         detail->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
-    case density_mode:
+    case DensityMode:
         detail->setMethod(mode_nums[method]);
         detail->setDensity(input.value(ui->densityEdit, "!").toInt());
         detail->setMaterialName(material);
         detail->setMaterialStyle(style_nums[style]);
         detail->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
-    case copy_mode:
+    case CopyMode:
         detail->setMethod(mode_nums[method]);
         detail->setMass(input.value(ui->massEdit, "!").toInt());
         detail->setDensity(input.value(ui->densityEdit, "!").toInt());

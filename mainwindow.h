@@ -16,9 +16,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     // Приватные поля:
-    Ui::MainWindow* ui;  // В умном указателе
-    DetailModel* model;  // В иерархии
-    QSortFilterProxyModel* proxy;  // В иерархии
+    Ui::MainWindow* ui;  // Указатель на UI
+    DetailModel* model;  // Табличная модель с деталями, в иерархии
+    QSortFilterProxyModel* proxy;  // Прокси модель сортировки, в иерархии
 
     // Приватные методы:
     void closeEvent(QCloseEvent* event);  // Для сохранения геометрии

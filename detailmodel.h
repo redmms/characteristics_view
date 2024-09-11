@@ -12,10 +12,14 @@ class DetailModel : public QAbstractTableModel
     Q_OBJECT
 private:
     // Приватные поля:
-    std::vector<DetailItem*> details;
-    const std::vector<AbstractHelper*> helpers;
-    std::vector<QString> headers;
-    const std::vector<void (DetailItem::*)()> detail_signal_names;
+    std::vector<DetailItem*> details;  // Данные о деталях, содержимое таблицы
+    const std::vector<AbstractHelper*> helpers;  // Вспомогательные объекты
+    // для работы с полями по индексу
+    std::vector<QString> headers;  // Заголовки таблицы
+
+    // Метод валидации индексов:
+    bool isValidRow(int row) const;
+    bool isValidColumn(int column) const;
 
 public:
     // Конструктор:
@@ -26,9 +30,9 @@ public:
     int rowCount(const QModelIndex& parent  = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
-    void insertRow(int row, DetailItem* detail);
+    bool insertRow(int row, DetailItem* detail);
     bool removeRow(int row);
-    void setHeaderData(int section, const QVariant &value);
+    bool setHeaderData(int section, const QVariant &value);
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role) const override;
 };

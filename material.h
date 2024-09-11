@@ -1,5 +1,5 @@
 #pragma once
-#include "enums.h"
+#include "stylenum.h"
 #include <Qstring>
 #include <QMap>
 #include <QObject>
@@ -18,7 +18,7 @@ private:
 public:
     // Конструкторы:
     explicit Material(QObject* parent = nullptr, QString name_ = "",
-                      HatchStyleNum hatch_style_ = none_style,
+                      HatchStyleNum hatch_style_ = NoneStyle,
                       int hatch_angle_ = -1
                       );
     Material(const Material& other);
@@ -31,15 +31,16 @@ public:
     QIcon getStyleIcon();
 
     // Методы валидации:
+    bool isValidName(QString name_);
     bool isValidStyle(HatchStyleNum style_);
     bool isValidAngle(int angle_);
     bool isValidStyleIcon(QIcon icon_);
     bool isValid();
 
     // Сэттеры со встроенной валидацией:
-    void setName(QString name_);
-    bool setStyle(HatchStyleNum style_);
-    bool setAngle(int angle_);
+    bool setName(QString name_ = "");
+    bool setStyle(HatchStyleNum style_ = NoneStyle);
+    bool setAngle(int angle_ = -1);
 
     // Методы преобразования в строку:
     QString nameToString();

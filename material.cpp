@@ -1,7 +1,6 @@
 #include "material.h"
 #include <QDebug>
 
-
 Material::Material(QObject *parent, QString name_,
                    HatchStyleNum hatch_style_, int hatch_angle_
                    ) :
@@ -47,10 +46,16 @@ QIcon Material::getStyleIcon()
     return result;
 }
 
+bool Material::isValidName(QString name_)
+{
+    // Валидация имени:
+    return !name_.split(' ').isEmpty();
+}
+
 bool Material::isValidStyle(HatchStyleNum style_)
 {
-    // Валидация enum'a
-    return style_ >= 0 && style_ < none_style;
+    // Валидация enum'a:
+    return style_ >= 0 && style_ < NoneStyle;
 }
 
 bool Material::isValidAngle(int angle_)
@@ -62,7 +67,9 @@ bool Material::isValidAngle(int angle_)
 bool Material::isValidStyleIcon(QIcon icon_)
 {
     // Проверка иконки на пустоту и неверный путь:
-    return !icon_.isNull() && !icon_.pixmap(120, 25).isNull();
+    static const int w = 120;  // here 120 x 25 is hatch_n.png size
+    static const int h = 25;
+    return !icon_.isNull() && !icon_.pixmap(w, h).isNull();
 }
 
 bool Material::isValid()
@@ -71,12 +78,16 @@ bool Material::isValid()
     return isValidStyle(hatch_style) && isValidAngle(hatch_angle);
 }
 
-void Material::setName(QString name_)
+bool Material::setName(QString name_)
 {
-    // Сэттер со встроенной валидацией:
-    name = name_;
-    short_name = name_.split(' ')[0];
-    emit nameChanged();
+    // Сэттер со встроенной валидацией:   
+    bool success = isValidName(name_);
+    if (success){
+        name = name_;
+        short_name = name_.split(' ')[0];
+        emit nameChanged();
+    }
+    return success;
 }
 
 bool Material::setStyle(HatchStyleNum style_)

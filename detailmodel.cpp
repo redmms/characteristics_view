@@ -31,6 +31,18 @@ DetailModel::DetailModel(int rows, QObject *parent) :
     }
 {}
 
+bool DetailModel::isValidRow(int row) const
+{
+    // Проверка индекса строки:
+    return row >= 0 && row < details.size();
+}
+
+bool DetailModel::isValidColumn(int column) const
+{
+    // Проверка индекса столбца:
+    return column >= 0 && column < helpers.size();
+}
+
 int DetailModel::rowCount(const QModelIndex& parent) const
 {
     // Количество строк:
@@ -50,12 +62,13 @@ QVariant DetailModel::data(const QModelIndex &index, int role) const
     // Метод для отображения ячеек в представлении
 
     // Проверка индекса:
-    if (!index.isValid()){
-        return {}; // add row check
+    if (!index.isValid() || !isValidRow(index.row()) ||
+        !isValidColumn(index.column())){
+        return {};
     }
 
     int i = index.row();
-    int j = index.column(); // TODO: check index for validity
+    int j = index.column();
 
     // Свой хэлпер для каждой колонки, своя деталь для каждой строки:
     switch (role) {
@@ -70,10 +83,14 @@ QVariant DetailModel::data(const QModelIndex &index, int role) const
     }
 }
 
-void DetailModel::insertRow(int row, DetailItem *detail) // should we
+bool DetailModel::insertRow(int row, DetailItem *detail) // should we
 // check the pointer before adding, or when using?
 {
     // Метод вставки строки
+    // Проверяем аргументы:
+    if (row < 0 || !detail){
+        return false;
+    }
 
     // Подключаем сигналы изменения полей детали, они же ячейки:
     for (auto helper : helpers){
@@ -85,39 +102,52 @@ void DetailModel::insertRow(int row, DetailItem *detail) // should we
     beginInsertRows(QModelIndex(), row, row); // "Уведомление"
     details.insert(details.begin() + row, detail);
     endInsertRows();
+    return true;
 }
 
 bool DetailModel::removeRow(int row)
 {
     // Метод удаления строки
-
-    // Удаляем строки-детали и уведомляем представление
-    if (row >= 0 && row < details.size()){
-        beginRemoveRows(QModelIndex(), row, row);
-        details.erase(details.begin() + row);
-        endRemoveRows();
-        return true;
-    }
-    else{
+    // Проверяем аргументы:
+    if (!isValidRow(row)){
         return false;
     }
+
+    // Удаляем строки-детали и уведомляем представление
+    beginRemoveRows(QModelIndex(), row, row);
+    details.erase(details.begin() + row);
+    endRemoveRows();
+    return true;
 }
 
-void DetailModel::setHeaderData(int section, const QVariant &value)
+bool DetailModel::setHeaderData(int section, const QVariant &value)
 {
     // Сэттер для заголовка таблицы
+    // Проверяем аргументы:
+    if (!isValidColumn(section)){
+        return false;
+    }
+
+    // Меняем заголовки:
     headers[section] = value.toString();
     emit headerDataChanged(Qt::Horizontal, section, section);
+    return true;
 }
 
-QVariant DetailModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant DetailModel::headerData(int section, Qt::Orientation orientation,
+                                 int role) const
 {
     // Метод для отображения ячеек заголовка в представлении
+    // Проверяем аргументы:
+    if (!isValidColumn(section)){
+        return {};
+    }
+
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole){
         return headers.at(section);
     }
     else{
-        return QVariant();
+        return {};
     }
 }
 

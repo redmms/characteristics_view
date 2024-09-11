@@ -1,5 +1,6 @@
 #pragma once
-#include "enums.h"
+#include "modenum.h"
+#include "stylenum.h"
 #include "material.h"
 #include <QObject>
 #include <QScopedPointer>
@@ -14,18 +15,18 @@ private:
     // Приватные поля:
     // Поля не проверяются соответствию режиму ввода FillMode. Это задача
     // UI класса. eval_method исключительно в роли поля способ расчёта.
-    ModeNum eval_method;
-    int mass;
-    int density;
-    QVector3D mass_center;  // Внутри float'ы
-    Material material;
+    ModeNum eval_method;  // Способ расчёта
+    int mass;  // Масса
+    int density;  // Плотность
+    QVector3D mass_center;  // Координаты центра масс, внутри float'ы
+    Material material;  // Материал, стиль и угол штриховки материала
 
     // Приватные методы:
     bool isValidNum(int num);
 
 public:
     // Конструктор:
-    explicit DetailItem(QObject* parent = nullptr, ModeNum eval_method_ = none_mode,
+    explicit DetailItem(QObject* parent = nullptr, ModeNum eval_method_ = NoneMode,
                         int mass_ = -1, int density_ = -1,
                         QVector3D mass_center_ = {-1, -1, -1},
                         Material material_ = Material());
@@ -46,14 +47,14 @@ public:
     Material getMaterial();
 
     // Сэттеры со встроенной валидацией:
-    bool setMethod(ModeNum eval_method_); // rv bool ok?
-    bool setMass(int mass_);
-    bool setDensity(int density_);
-    bool setCenter(QVector3D mass_center_);
-    bool setMaterial(Material material_);
-    void setMaterialName(QString material_name_); // should I exclude it?
-    bool setMaterialStyle(HatchStyleNum style_);
-    bool setMaterialAngle(int angle_);
+    bool setMethod(ModeNum eval_method_ = NoneMode); // rv bool ok?
+    bool setMass(int mass_ = -1);
+    bool setDensity(int density_ = -1);
+    bool setCenter(QVector3D mass_center_ = {-1, -1, -1});
+    bool setMaterial(Material material_ = Material());
+    bool setMaterialName(QString material_name_ = ""); // should I exclude it?
+    bool setMaterialStyle(HatchStyleNum style_ = NoneStyle);
+    bool setMaterialAngle(int angle_ = -1);
 
     // Методы преобразования в строку для каждого поля, даже если оно уже
     // строка. Сделано для удобства вызова из хэлперов модели.

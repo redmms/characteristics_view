@@ -1,6 +1,6 @@
 #pragma once
 #include "fillmode.h"
-#include "enums.h"
+#include "modenum.h"
 #include "detailitem.h"
 #include <QDialog>
 #include <QList>
@@ -15,11 +15,11 @@ class ControllerDialog : public QDialog
     Q_OBJECT
 private:
     // Приватные поля:
-    Ui::ControllerDialog *ui;
-    DetailItem* detail;
-    QRegularExpressionValidator* validator;
-    QMap<ModeNum, FillMode*> modes;  // Описание каждого способа расчета
-    ModeNum current_mode;
+    Ui::ControllerDialog *ui;  // Указатель на UI
+    DetailItem* detail;  // Введенные данные о детали
+    QRegularExpressionValidator* validator;  // Валидатор ввода
+    QMap<ModeNum, FillMode*> modes;  // Описание каждого режима ввода
+    ModeNum current_mode;  // Текущий режим ввода
 
 public:
     // Конструктор, деструктор:
