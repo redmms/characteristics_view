@@ -69,13 +69,13 @@ void MainWindow::on_addLineButton_clicked()
 
         // Чтобы проверить работу с DetailItem по указателю добавьте
         // следующие строки после добавления детали в модель:
-        new_row->setMaterialName("Changed Excluded part Bla Bla Bla");
-        new_row->setCenter({99999, 126789, 21234});
-        delete new_row;
+//        new_row->setMaterialName("Changed Excluded part Bla Bla Bla");
+//        new_row->setCenter({99999, 126789, 21234});
+//        delete new_row;
 
-        QTimer::singleShot(3000, this,[&](){
-            delete new_row;
-        });
+//        QTimer::singleShot(3000, this,[&](){
+//            delete new_row;
+//        });
     }
 }
 

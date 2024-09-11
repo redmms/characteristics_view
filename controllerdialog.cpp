@@ -45,7 +45,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     modes[CopyMode].setShow({ui->massFrame, ui->densityFrame});
     modes[CopyMode].setEnable({});
     modes[CopyMode].setDisable({ui->massEdit, ui->densityEdit, ui->styleBox,
-                                ui->angleEdit});
+                                ui->angleEdit, ui->materialEdit});
     modes[CopyMode].setEdit({ui->massEdit, ui->densityEdit, ui->angleEdit});
     modes[CopyMode].setDefaultFocusPtr(ui->materialEdit);
     modes[CopyMode].setDefaultValue("0");

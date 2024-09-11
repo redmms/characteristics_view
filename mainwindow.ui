@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>787</width>
-    <height>418</height>
+    <width>852</width>
+    <height>519</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -39,7 +39,10 @@ QPushButton:pressed{
 	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, 
                                 stop:0 #e5e5e5, stop:1 white);
 }
-</string>
+
+QAbstractItemView{
+    selection-background-color: #22cce7;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -117,7 +120,7 @@ QPushButton:pressed{
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>787</width>
+     <width>852</width>
      <height>22</height>
     </rect>
    </property>
