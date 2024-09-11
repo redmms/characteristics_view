@@ -13,13 +13,13 @@ private:
     // Храним ссылки на контейнеры деталей и хэлперов, чтобы находить индексы
     // колонок и столбцов соответственно. Они нужны всем наследникам, поэтому
     // здесь.
-    const std::vector<DetailItem*>& details;
-    const std::vector<AbstractHelper*>& helpers;
+    const QVector<DetailItem*>& details;
+    const QVector<AbstractHelper*>& helpers;
 
 public:
     // Конструктор:
-    AbstractHelper(const std::vector<DetailItem*>& details_,
-                   const std::vector<AbstractHelper*>& helpers_,
+    AbstractHelper(const QVector<DetailItem*>& details_,
+                   const QVector<AbstractHelper*>& helpers_,
                    QObject *parent = nullptr);
 
     // Виртуальные методы:

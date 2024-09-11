@@ -142,6 +142,7 @@ QVariant DetailModel::headerData(int section, Qt::Orientation orientation,
         return {};
     }
 
+    // Возвращаем заголовок
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole){
         return headers.at(section);
     }

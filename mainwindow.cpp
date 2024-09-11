@@ -60,15 +60,8 @@ void MainWindow::on_addLineButton_clicked()
         // Сохраняем данные из контроллера в виде DetailItem:
         DetailItem* new_row = controller.getInsertedLine(this);
 
-        // Проверяем индекс строки:
-        int insert_idx = ui->tableView->currentIndex().row() + 1;
-        if (!insert_idx){
-            insert_idx = model->rowCount();
-            // this is for adding order if no row is selected by user
-            // this way we always add it to the end of the table instead of
-            // beggining, it goes in pair with inserting
-            // (appending wouldn't need it)
-        }
+        // Проверяем индекс новой строки:
+        int insert_idx = model->rowCount();
 
         // Вставляем строку-деталь
         model->insertRow(insert_idx, new_row);

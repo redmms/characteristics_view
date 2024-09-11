@@ -18,49 +18,39 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Определяем то, что зависит от UI:
-    modes = {
-        {
-            MassMode,
-            new FillMode(
-                {ui->densityFrame},
-                {ui->coordBox, ui->massFrame}, // Here we only enlist those widgets that can differ from usual dialog state
-                {},
-                {},
-                {ui->massEdit, ui->xEdit, ui->yEdit, ui->zEdit, ui->angleEdit},
-                ui->massEdit,
-                "0",
-                this
-                )
-        },
-            {
-                DensityMode,
-                new FillMode(
-                    {ui->coordBox, ui->massFrame}, // it is better to make it by Mode::setSomeList();
-                    {ui->densityFrame},
-                    {},
-                    {},
-                    {ui->densityEdit, ui->angleEdit},
-                    ui->densityEdit,
-                    "0",
-                this
-                    )
-            },
-        {
-            CopyMode,
-                new FillMode(
-                    {ui->coordBox}, // hide
-                    {ui->massFrame, ui->densityFrame},  // show
-                    {}, // enable
-                    {ui->massEdit, ui->densityEdit, ui->styleBox,
-                     ui->angleEdit, ui->materialEdit}, // disable
-                    {ui->massEdit, ui->densityEdit, ui->angleEdit},
-                    nullptr,
-                    "0",
-                this
-                    )
-        }
-    };
+    // Описываем режимы ввода:
+    modes = {{MassMode, {}},
+             {DensityMode, {}},
+             {CopyMode, {}}};
+
+    modes[MassMode].setHide({ui->densityFrame});
+    modes[MassMode].setShow({ui->coordBox, ui->massFrame});
+    modes[MassMode].setEnable({});
+    modes[MassMode].setDisable({});
+    modes[MassMode].setEdit({ui->massEdit, ui->xEdit, ui->yEdit,ui->zEdit,
+                             ui->angleEdit});
+    modes[MassMode].setDefaultFocusPtr(ui->massEdit);
+    modes[MassMode].setDefaultValue("0");
+    modes[MassMode].setEventFilterPtr(this);
+
+    modes[DensityMode].setHide({ui->coordBox, ui->massFrame});
+    modes[DensityMode].setShow({ui->densityFrame});
+    modes[DensityMode].setEnable({});
+    modes[DensityMode].setDisable({});
+    modes[DensityMode].setEdit({ui->densityEdit, ui->angleEdit});
+    modes[DensityMode].setDefaultFocusPtr(ui->densityEdit);
+    modes[DensityMode].setDefaultValue("0");
+    modes[DensityMode].setEventFilterPtr(this);
+
+    modes[CopyMode].setHide({ui->coordBox});
+    modes[CopyMode].setShow({ui->massFrame, ui->densityFrame});
+    modes[CopyMode].setEnable({});
+    modes[CopyMode].setDisable({ui->massEdit, ui->densityEdit, ui->styleBox,
+                                ui->angleEdit});
+    modes[CopyMode].setEdit({ui->massEdit, ui->densityEdit, ui->angleEdit});
+    modes[CopyMode].setDefaultFocusPtr(ui->materialEdit);
+    modes[CopyMode].setDefaultValue("0");
+    modes[CopyMode].setEventFilterPtr(this);
 
     // Устанавливаем валидатор:
     for (auto uiptr : {ui->massEdit, ui->xEdit, ui->yEdit, ui->zEdit,
@@ -70,8 +60,8 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
 
     // Запускаем дефолтный режим:
     ui->materialEdit->installEventFilter(this);
-    modes[current_mode]->turnOn();
-    modes[current_mode]->fillInDefaultValues();
+     modes[current_mode].turnOn();
+     modes[current_mode].fillInDefaultValues();
 }
 
 ControllerDialog::~ControllerDialog()
@@ -106,14 +96,14 @@ void ControllerDialog::on_cancelButton_clicked()
 void ControllerDialog::on_applyButton_clicked()
 {
     // Считываем поля UI, зависимые от способа расчёта:
-    QMap<QLineEdit*, QString> input = modes[current_mode]->getText();
+    QMap<QLineEdit*, QString> input =  modes[current_mode].getText();
 
     // Считываем статичные поля:
     QString method = ui->methodBox->currentText();
     QString material = ui->materialEdit->text();
     QString style = ui->styleBox->currentText();
 
-    // Запоминаем имена каждого поля ввода, видимые пользователю
+    // Запоминаем где искать имена каждого поля ввода, видимые пользователю
     QMap<QLineEdit*, QLabel*> edit_labels{
         {ui->massEdit, ui->massLabel},
         {ui->densityEdit, ui->densityLabel},
@@ -217,10 +207,10 @@ void ControllerDialog::on_methodBox_currentIndexChanged(int index)
 {
     // Меняем режим ввода:
     ModeNum new_mode = ModeNum(index);   
-    modes[current_mode]->turnOff();
-    modes[new_mode]->turnOn();
-    modes[new_mode]->fillInDefaultValues();
-    modes[new_mode]->setDefaultFocus();
+     modes[current_mode].turnOff();
+    modes[new_mode].turnOn();
+    modes[new_mode].fillInDefaultValues();
+    modes[new_mode].activateDefaultFocus();
     current_mode = new_mode;
 }
 

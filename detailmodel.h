@@ -2,20 +2,17 @@
 #include "detailitem.h"
 #include "helpers/abstracthelper.h"
 #include <QAbstractTableModel>
-#include <QList>
 #include <QVector>
-#include <list>
-#include <vector>
 
 class DetailModel : public QAbstractTableModel
 {
     Q_OBJECT
 private:
     // Приватные поля:
-    std::vector<DetailItem*> details;  // Данные о деталях, содержимое таблицы
-    const std::vector<AbstractHelper*> helpers;  // Вспомогательные объекты
+    QVector<DetailItem*> details;  // Данные о деталях, содержимое таблицы
+    const QVector<AbstractHelper*> helpers;  // Вспомогательные объекты
     // для работы с полями по индексу
-    std::vector<QString> headers;  // Заголовки таблицы
+    QVector<QString> headers;  // Заголовки таблицы
 
     // Метод валидации индексов:
     bool isValidRow(int row) const;

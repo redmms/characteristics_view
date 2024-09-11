@@ -3,23 +3,25 @@
 #include <QLineEdit>
 #include <QWidget>
 
-FillMode::FillMode(const QList<QWidget *> &hide_ptrs_,
-           const QList<QWidget *> &show_ptrs_,
-           const QList<QWidget *> &enable_ptrs_,
-           const QList<QWidget *> &disable_ptrs_,
-           const QList<QLineEdit *> &edit_ptrs_,
-           QLineEdit* const focus_on_ptr_,
-           QString default_value_,
-                   QObject* event_filter_,
-                   QObject* parent_) :
+FillMode::FillMode( const QList<QWidget *> &hide_ptrs_,
+                    const QList<QWidget *> &show_ptrs_,
+                    const QList<QWidget *> &enable_ptrs_,
+                    const QList<QWidget *> &disable_ptrs_,
+                    const QList<QLineEdit *> &edit_ptrs_,
+                    QLineEdit* const default_focus_ptr_,
+                    QString default_value_,
+                    QObject* event_filter_) :
     hide_ptrs(hide_ptrs_),
     show_ptrs(show_ptrs_),
     enable_ptrs(enable_ptrs_),
     disable_ptrs(disable_ptrs_),
     edit_ptrs(edit_ptrs_),
-    auto_focus_ptr(focus_on_ptr_),
+    default_focus_ptr(default_focus_ptr_),
     default_value(default_value_),
     event_filter(event_filter_)
+{}
+
+FillMode::FillMode()
 {}
 
 void FillMode::turnOn()
@@ -114,11 +116,56 @@ void FillMode::fillInDefaultValues()
     }
 }
 
-void FillMode::setDefaultFocus()
+void FillMode::activateDefaultFocus()
 {
     // Ставим курсор в поле по умолчанию:
-    if (auto_focus_ptr){
-        auto_focus_ptr->selectAll();
-        auto_focus_ptr->setFocus();
+    if (default_focus_ptr){
+        default_focus_ptr->selectAll();
+        default_focus_ptr->setFocus();
     }
+}
+
+void FillMode::setHide(QList<QWidget *> hide_ptrs_)
+{
+    hide_ptrs = hide_ptrs_;
+}
+
+void FillMode::setShow(QList<QWidget *> show_ptrs_)
+{
+    show_ptrs = show_ptrs_;
+}
+
+void FillMode::setEnable(QList<QWidget *> enable_ptrs_)
+{
+    enable_ptrs = enable_ptrs_;
+}
+
+void FillMode::setDisable(QList<QWidget *> disable_ptrs_)
+{
+    disable_ptrs = disable_ptrs_;
+}
+
+void FillMode::setEdit(QList<QLineEdit *> edit_ptrs_)
+{
+    edit_ptrs = edit_ptrs_;
+}
+
+void FillMode::setDefaultFocusPtr(QLineEdit *default_focus_ptr_)
+{
+    default_focus_ptr = default_focus_ptr_;
+}
+
+void FillMode::setDefaultValue(QString default_value_)
+{
+    default_value = default_value_;
+}
+
+void FillMode::setDefaultValues(InsertData default_values_)
+{
+    default_values = default_values_;
+}
+
+void FillMode::setEventFilterPtr(QObject *event_filter_)
+{
+    event_filter = event_filter_;
 }

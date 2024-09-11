@@ -1,6 +1,6 @@
 #include "abstracthelper.h"
 
-AbstractHelper::AbstractHelper(const std::vector<DetailItem *> &details_, const std::vector<AbstractHelper *> &helpers_, QObject *parent) :
+AbstractHelper::AbstractHelper(const QVector<DetailItem *> &details_, const QVector<AbstractHelper *> &helpers_, QObject *parent) :
     QObject{parent},
     details(details_),
     helpers(helpers_)
@@ -13,12 +13,9 @@ void AbstractHelper::findChangedIndex()
 
     // Находим индекс ячейки:
     // Такой подход не самый быстродейственный, но зато не требует лишнего
-    // места под второй контейнер с деталями, либо под индексы для каждой
-    // детали.
-    int i = std::distance(details.begin(), std::find(details.begin(),
-                                                     details.end(), detail)); // not efficient
-    int j = std::distance(helpers.begin(), std::find(helpers.begin(),
-                                                     helpers.end(), this));
+    // места и не зависит от добавления/удаления строк в таблице
+    int i = details.indexOf(detail);
+    int j = helpers.indexOf(this);
 
     // Отправляем сигнал с нужной сигнатурой представлению:
     QModelIndex idx = (qobject_cast<QAbstractItemModel*>(parent()))->

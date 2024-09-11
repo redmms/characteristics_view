@@ -18,7 +18,7 @@ private:
     Ui::ControllerDialog *ui;  // Указатель на UI
     DetailItem* detail;  // Введенные данные о детали
     QRegularExpressionValidator* validator;  // Валидатор ввода
-    QMap<ModeNum, FillMode*> modes;  // Описание каждого режима ввода
+    QMap<ModeNum, FillMode> modes;  // Описание каждого режима ввода
     ModeNum current_mode;  // Текущий режим ввода
 
 public:
