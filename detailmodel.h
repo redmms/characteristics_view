@@ -11,7 +11,7 @@ private:
     // Приватные поля:
     QVector<DetailItem*> details;  // Данные о деталях, содержимое таблицы
     const QVector<AbstractHelper*> helpers;  // Вспомогательные объекты
-    // для работы с полями по индексу
+    // для работы с полями DetailItem по индексу
     QVector<QString> headers;  // Заголовки таблицы
 
     // Метод валидации индексов:
@@ -32,4 +32,7 @@ public:
     bool setHeaderData(int section, const QVariant &value);
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role) const override;
+
+private slots:
+    void detailDeleted(QObject* object);
 };

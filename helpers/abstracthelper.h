@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QAbstractItemModel>
 #include <QModelIndex>
-#include <functional>
 
 class AbstractHelper : public QObject
 {

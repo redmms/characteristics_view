@@ -91,16 +91,23 @@ bool DetailModel::insertRow(int row, DetailItem *detail) // should we
         return false;
     }
 
+    // Сразу же забираем владение объектом:
+    detail->setParent(this);
+
     // Подключаем сигналы изменения полей детали, они же ячейки:
     for (auto helper : helpers){
         helper->connectDetailSignal(detail);
         connect(helper, &AbstractHelper::dataChanged, this, &QAbstractItemModel::dataChanged); // should be abstract or not?
     }
 
+    // Подключаем сигнал удаления детали:
+    connect(detail, &DetailItem::destroyed, this, &DetailModel::detailDeleted);
+
     // Вставлем строки-детали и уведомляем представление
     beginInsertRows(QModelIndex(), row, row); // "Уведомление"
-    details.insert(details.begin() + row, detail);
+    details.insert(row, detail);
     endInsertRows();
+
     return true;
 }
 
@@ -114,7 +121,7 @@ bool DetailModel::removeRow(int row)
 
     // Удаляем строки-детали и уведомляем представление
     beginRemoveRows(QModelIndex(), row, row);
-    details.erase(details.begin() + row);
+    details.remove(row);
     endRemoveRows();
     return true;
 }
@@ -149,6 +156,15 @@ QVariant DetailModel::headerData(int section, Qt::Orientation orientation,
     else{
         return {};
     }
+}
+
+void DetailModel::detailDeleted(QObject *object)
+{
+    // Очищаем строку из-под удаленной по указателю детали:
+//    DetailItem* detail = qobject_cast<DetailItem*>(object);  // RV - should we check that или это лишнее?
+
+    removeRow(details.indexOf((DetailItem*)object)); // TODO
+
 }
 
 

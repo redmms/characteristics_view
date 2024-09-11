@@ -95,6 +95,7 @@ QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top center;
     padding: 0 3px;
+	margin: 8;
 }
 
 QGroupBox::indicator {
@@ -383,7 +384,7 @@ QMessageBox QPushButton:pressed{
          <number>0</number>
         </property>
         <property name="topMargin">
-         <number>6</number>
+         <number>20</number>
         </property>
         <property name="rightMargin">
          <number>0</number>

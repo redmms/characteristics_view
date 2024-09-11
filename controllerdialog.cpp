@@ -4,7 +4,6 @@
 #include <QRegularExpression>
 #include <QStandardItem>
 #include <QMessageBox>
-#include <list>
 #include <QDebug>
 #include <QTimer>
 
@@ -206,8 +205,8 @@ void ControllerDialog::on_applyButton_clicked()
 void ControllerDialog::on_methodBox_currentIndexChanged(int index)
 {
     // Меняем режим ввода:
-    ModeNum new_mode = ModeNum(index);   
-     modes[current_mode].turnOff();
+    ModeNum new_mode = ModeNum(index);
+    modes[current_mode].turnOff();
     modes[new_mode].turnOn();
     modes[new_mode].fillInDefaultValues();
     modes[new_mode].activateDefaultFocus();

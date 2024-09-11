@@ -8,7 +8,7 @@ class QWidget;
 class QLineEdit;
 class FillMode
 {
-    using InsertData = QMap<QLineEdit*, QString>;
+    using InputData = QMap<QLineEdit*, QString>;
 private:
     // Приватные поля:
     // Описывают, какие элементы UI изменить в данном режиме относительно
@@ -20,7 +20,7 @@ private:
     QList<QLineEdit*> edit_ptrs;  // Где читать и заполнять
     QLineEdit* default_focus_ptr; // Что выделять в первую очередь
     QString default_value;  // Чем заполнять
-    InsertData default_values;  // Гибкая настройка чем заполнять
+    InputData default_values;  // Гибкая настройка чем заполнять
     QObject* event_filter;  // Как и когда выделять
 
 public:
@@ -52,6 +52,6 @@ public:
     void setEdit(QList<QLineEdit*> edit_ptrs_);
     void setDefaultFocusPtr(QLineEdit* default_focus_ptr_);
     void setDefaultValue(QString default_value_);
-    void setDefaultValues(InsertData default_values_);
+    void setDefaultValues(InputData default_values_);
     void setEventFilterPtr(QObject* event_filter_);
 };

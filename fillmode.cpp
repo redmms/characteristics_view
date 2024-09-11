@@ -160,7 +160,7 @@ void FillMode::setDefaultValue(QString default_value_)
     default_value = default_value_;
 }
 
-void FillMode::setDefaultValues(InsertData default_values_)
+void FillMode::setDefaultValues(InputData default_values_)
 {
     default_values = default_values_;
 }
