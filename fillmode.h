@@ -8,7 +8,7 @@ class QWidget;
 class QLineEdit;
 class FillMode
 {
-    using InputData = QMap<QLineEdit*, QString>;
+    using InputData = QMap<QObject*, QString>;
 private:
     // Приватные поля:
     // Описывают, какие элементы UI изменить в данном режиме относительно
@@ -38,7 +38,7 @@ public:
     // Публичные методы:
     void turnOn();
     void turnOff();
-    QMap<QLineEdit*, QString> getText();
+    InputData getText();
     void fillInDefaultValue(QLineEdit* uiptr, QString defval);
     void clearDefaultValues();
     void fillInDefaultValues();

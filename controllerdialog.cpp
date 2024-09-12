@@ -14,43 +14,52 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     validator(new QRegularExpressionValidator(
         QRegularExpression("^[0-9]{0,7}$"), this)),  // До 7 цифр, как во float,
     // не позволяет вводить - и +
-    current_mode{MassMode}
+    current_mode{Msp::MassMode}
 {
     ui->setupUi(this);
 
+    // Проверяем словари для работы с enum на соответствие UI:
+    Msp::checkModeNames(ui->methodBox);
+    Msp::checkModeNums(ui->methodBox);
+    Msp::checkModeIconPaths();
+
+    Ssp::checkStyleNames(ui->styleBox);
+    Ssp::checkStyleNums(ui->styleBox);
+    Ssp::checkStyleIconPaths();
+
     // Описываем режимы ввода:
-    modes = {{MassMode, {}},
-             {DensityMode, {}},
-             {CopyMode, {}}};
+    modes = {{Msp::MassMode, {}},
+             {Msp::DensityMode, {}},
+             {Msp::CopyMode, {}}};
 
-    modes[MassMode].setHide({ui->densityFrame});
-    modes[MassMode].setShow({ui->coordBox, ui->massFrame});
-    modes[MassMode].setEnable({});
-    modes[MassMode].setDisable({});
-    modes[MassMode].setEdit({ui->massEdit, ui->xEdit, ui->yEdit,ui->zEdit,
+    modes[Msp::MassMode].setHide({ui->densityFrame});
+    modes[Msp::MassMode].setShow({ui->coordBox, ui->massFrame});
+    modes[Msp::MassMode].setEnable({});
+    modes[Msp::MassMode].setDisable({});
+    modes[Msp::MassMode].setEdit({ui->massEdit, ui->xEdit, ui->yEdit,ui->zEdit,
                              ui->angleEdit});
-    modes[MassMode].setDefaultFocusPtr(ui->massEdit);
-    modes[MassMode].fillInDefaultValue("0");
-    modes[MassMode].setEventFilterPtr(this);
+    modes[Msp::MassMode].setDefaultFocusPtr(ui->massEdit);
+    modes[Msp::MassMode].fillInDefaultValue("0");
+    modes[Msp::MassMode].setEventFilterPtr(this);
 
-    modes[DensityMode].setHide({ui->coordBox, ui->massFrame});
-    modes[DensityMode].setShow({ui->densityFrame});
-    modes[DensityMode].setEnable({});
-    modes[DensityMode].setDisable({});
-    modes[DensityMode].setEdit({ui->densityEdit, ui->angleEdit});
-    modes[DensityMode].setDefaultFocusPtr(ui->densityEdit);
-    modes[DensityMode].fillInDefaultValue("0");
-    modes[DensityMode].setEventFilterPtr(this);
+    modes[Msp::DensityMode].setHide({ui->coordBox, ui->massFrame});
+    modes[Msp::DensityMode].setShow({ui->densityFrame});
+    modes[Msp::DensityMode].setEnable({});
+    modes[Msp::DensityMode].setDisable({});
+    modes[Msp::DensityMode].setEdit({ui->densityEdit, ui->angleEdit});
+    modes[Msp::DensityMode].setDefaultFocusPtr(ui->densityEdit);
+    modes[Msp::DensityMode].fillInDefaultValue("0");
+    modes[Msp::DensityMode].setEventFilterPtr(this);
 
-    modes[CopyMode].setHide({ui->coordBox});
-    modes[CopyMode].setShow({ui->massFrame, ui->densityFrame});
-    modes[CopyMode].setEnable({});
-    modes[CopyMode].setDisable({ui->massEdit, ui->densityEdit, ui->styleBox,
+    modes[Msp::CopyMode].setHide({ui->coordBox});
+    modes[Msp::CopyMode].setShow({ui->massFrame, ui->densityFrame});
+    modes[Msp::CopyMode].setEnable({});
+    modes[Msp::CopyMode].setDisable({ui->massEdit, ui->densityEdit, ui->styleBox,
                                 ui->angleEdit, ui->materialEdit});
-    modes[CopyMode].setEdit({ui->massEdit, ui->densityEdit, ui->angleEdit});
-    modes[CopyMode].setDefaultFocusPtr(nullptr);
-    modes[CopyMode].fillInDefaultValue("0");
-    modes[CopyMode].setEventFilterPtr(this);
+    modes[Msp::CopyMode].setEdit({ui->massEdit, ui->densityEdit, ui->angleEdit});
+    modes[Msp::CopyMode].setDefaultFocusPtr(nullptr);
+    modes[Msp::CopyMode].fillInDefaultValue("0");
+    modes[Msp::CopyMode].setEventFilterPtr(this);
 
     // Устанавливаем валидатор:
     for (auto uiptr : {ui->massEdit, ui->xEdit, ui->yEdit, ui->zEdit,
@@ -58,7 +67,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
         uiptr->setValidator(validator);
     }
 
-    // Запускаем дефолтный режим:
+    // Запускаем режим по умолчанию:
     ui->materialEdit->installEventFilter(this);
     modes[current_mode].turnOn();
     modes[current_mode].fillInDefaultValues();
@@ -81,7 +90,7 @@ bool ControllerDialog::eventFilter(QObject *object, QEvent *event)
 {
     // Выделяем всю строку для удобства пользователя:
     QLineEdit* edit = static_cast<QLineEdit*>(object);
-    if(edit && event->type() == QEvent::FocusIn){ // RV: should I cast QEvent to some QMouseEvent?
+    if(edit && event->type() == QEvent::FocusIn){
         QTimer::singleShot(0,edit,SLOT(selectAll()));
     }
     return QDialog::eventFilter(object, event);
@@ -96,27 +105,12 @@ void ControllerDialog::on_cancelButton_clicked()
 void ControllerDialog::on_applyButton_clicked()
 {
     // Считываем поля UI, зависимые от способа расчёта:
-    QMap<QLineEdit*, QString> input =  modes[current_mode].getText();
+    InputData input = modes[current_mode].getText();
+    input[ui->materialEdit] = ui->materialEdit->text();
 
-    // Считываем статичные поля:
-    QString method = ui->methodBox->currentText();
-    QString material = ui->materialEdit->text();
-    QString style = ui->styleBox->currentText();
-
-    // Запоминаем где искать имена каждого поля ввода, видимые пользователю
-    QMap<QLineEdit*, QLabel*> edit_labels{
-        {ui->massEdit, ui->massLabel},
-        {ui->densityEdit, ui->densityLabel},
-        {ui->xEdit, ui->xLabel},
-        {ui->yEdit, ui->yLabel},
-        {ui->zEdit, ui->zLabel},
-        {ui->materialEdit, ui->materialLabel},
-        {ui->angleEdit, ui->angleLabel}
-    };
-
-    // Проверяем ввод на пустые значения:
-    QList<QLineEdit*> empty_edits;
-    if (current_mode != CopyMode){
+    // Проверяем ввод из полей (не комбобоксов) на пустые значения:
+    QList<QObject*> empty_edits;
+    if (current_mode != Msp::CopyMode){
         for (auto it = input.begin(); it != input.end(); ++it) {
             QString val = it.value();
             if (it.key() == ui->xEdit || it.key() == ui->yEdit ||
@@ -129,90 +123,118 @@ void ControllerDialog::on_applyButton_clicked()
                 empty_edits.push_back(it.key()); // Все остальные поля ввода
             }
         }
-
-        // Отдельная проверка имени материала:
-        if (material == ""){
-            empty_edits.push_back(ui->materialEdit);
-        }
     }
 
-    // Готовим предупреждение пользователю:
-    QString empty_names = "";
+    // Запоминаем где искать имена каждого поля ввода, видимые пользователю:
+    QMap<QObject*, QLabel*> edit_labels{
+        {ui->massEdit, ui->massLabel},
+        {ui->densityEdit, ui->densityLabel},
+        {ui->xEdit, ui->xLabel},
+        {ui->yEdit, ui->yLabel},
+        {ui->zEdit, ui->zLabel},
+        {ui->materialEdit, ui->materialLabel},
+        {ui->angleEdit, ui->angleLabel}
+    };
+
+    // Собираем из UI имена пустых полей для предупреждения пользователю:
+    QStringList empty_names = {};  // Имена пустых полей
     for (auto empty_edit : empty_edits){
-        empty_names.push_back("\"");
-        empty_names.push_back(edit_labels[empty_edit]->text().split(' ').first().remove(':').remove(','));
-        empty_names.push_back("\", ");
-    }
-    empty_names.chop(2);
-
-    // Предупреждаем пользователя о пустых значениях:
-    if (!empty_edits.isEmpty()){ // is there a better way, to avoid allocating extra memory?
-        QMessageBox msg_box(this);
-        msg_box.setWindowTitle("Пустые значения");
-        QString inner_text = "";
-        if (empty_edits.size() > 1){
-            inner_text = "Поля " + empty_names + " не заполнены.";
-        }
-        else{
-            inner_text = "Поле " + empty_names + " не заполнено.";
-        }
-        msg_box.setText(inner_text);
-        msg_box.setIcon(QMessageBox::Warning);
-        msg_box.addButton("Заполнить", QMessageBox::AcceptRole);
-        msg_box.exec();
-        return;
+        empty_names.push_back(edit_labels[empty_edit]->text().split(' ').first()
+                              .remove(':').remove(','));
     }
 
-    // Заполняем поля детали, которую потом передадим главному окну методом get
-    // Диалог контроллера не динамический в MainWindow, поэтому не устанавливаем
-    // пока родителя для PartItem(), это произойдет в PartModel
-    part = new PartItem();
+    // Показываем предупреждение если есть пустые значения:
+    if (!empty_names.isEmpty()){
+        showEmptyWarningBox(empty_names);
+        return;  // Чтобы не забыть при редактировании
+    }
+    else{
+        // Считываем оставшиеся данные из комбобоксов:
+        input[ui->methodBox] = ui->methodBox->currentText();
+        input[ui->styleBox] = ui->styleBox->currentText();
 
+        // Заполняем поля детали, которую потом передадим главному окну геттером:
+        part = new PartItem(this);
+        setUpPart(input, part);
+
+        // Успех:
+        accept();
+    }
+}
+
+void ControllerDialog::setUpPart(InputData input, PartItem *new_part)
+{
     // Заполняем данные детали:
     switch(current_mode){
-    case MassMode:
-        part->setMethod(mode_nums[method]);
-        part->setMass(input.value(ui->massEdit, "!").toInt());
+    case Msp::MassMode:
+        new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
+        new_part->setMass(input.value(ui->massEdit, "!").toInt());
         if (ui->coordBox->isChecked()){
             QString x = input.value(ui->xEdit, "!");
             QString y = input.value(ui->yEdit, "!");
             QString z = input.value(ui->zEdit, "!");
             QVector3D center{x.toFloat(), y.toFloat(), z.toFloat()};
-            part->setCenter(center);
+            new_part->setCenter(center);
         }
-        part->setMaterialName(material);
-        part->setMaterialStyle(style_nums[style]);
-        part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        new_part->setMaterialName(input.value(ui->materialEdit, "!"));
+        new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
+        new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
-    case DensityMode:
-        part->setMethod(mode_nums[method]);
-        part->setDensity(input.value(ui->densityEdit, "!").toInt());
-        part->setMaterialName(material);
-        part->setMaterialStyle(style_nums[style]);
-        part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+    case Msp::DensityMode:
+        new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
+        new_part->setDensity(input.value(ui->densityEdit, "!").toInt());
+        new_part->setMaterialName(input.value(ui->materialEdit, "!"));
+        new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
+        new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
-    case CopyMode:
-        part->setMethod(mode_nums[method]);
-        part->setMass(input.value(ui->massEdit, "!").toInt());
-        part->setDensity(input.value(ui->densityEdit, "!").toInt());
-        part->setMaterialName(material);
-        part->setMaterialStyle(style_nums[style]);
-        part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+    case Msp::CopyMode:
+        new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
+        new_part->setMass(input.value(ui->massEdit, "!").toInt());
+        new_part->setDensity(input.value(ui->densityEdit, "!").toInt());
+        new_part->setMaterialName(input.value(ui->materialEdit, "!"));
+        new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
+        new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
     }
-    accept();
+}
+
+void ControllerDialog::showEmptyWarningBox(QStringList empty_names)
+{
+    // Предупреждаем пользователя о пустых значениях:
+    if (!empty_names.isEmpty()){
+        // Готовим текст предупреждения пользователю:
+        QString inner_text = "";
+        for (auto empty_name : empty_names){  // Должен работать COW
+            inner_text.push_back("\"");
+            inner_text.push_back(empty_name);
+            inner_text.push_back("\", ");
+        }
+        inner_text.chop(2);
+
+        // Показываем модальное окно предупреждения:
+        QMessageBox msg_box(this);
+        msg_box.setWindowTitle("Пустые значения");
+        QString warning_text = "";
+        if (empty_names.size() > 1){
+            warning_text = "Поля " + inner_text + " не заполнены.";
+        }
+        else{
+            warning_text = "Поле " + inner_text + " не заполнено.";
+        }
+        msg_box.setText(warning_text);
+        msg_box.setIcon(QMessageBox::Warning);
+        msg_box.addButton("Заполнить", QMessageBox::AcceptRole);
+        msg_box.exec();
+    }
 }
 
 void ControllerDialog::on_methodBox_currentIndexChanged(int index)
 {
     // Меняем режим ввода:
-    ModeNum new_mode = ModeNum(index);
+    Msp::ModeNum new_mode = Msp::ModeNum(index);
     modes[current_mode].turnOff();
     modes[new_mode].turnOn();
     modes[new_mode].fillInDefaultValues();
     modes[new_mode].activateDefaultFocus();
     current_mode = new_mode;
 }
-
-
-

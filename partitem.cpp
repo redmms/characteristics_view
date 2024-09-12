@@ -1,9 +1,10 @@
 #include "partitem.h"
 #include <QDebug>
 
-PartItem::PartItem(QObject *parent, ModeNum eval_method_, int mass_,
+PartItem::PartItem(QObject *parent, Msp::ModeNum eval_method_, int mass_,
                        int density_, QVector3D mass_center_, Material material_
                        ) :
+    QObject(parent),
     eval_method(eval_method_),
     mass(mass_),
     density(density_),
@@ -25,10 +26,10 @@ bool PartItem::isValidNum(int num)
     return num >= 0;
 }
 
-bool PartItem::isValidMethod(ModeNum method_)
+bool PartItem::isValidMethod(Msp::ModeNum method_)
 {
     // Валидация enum:
-    return method_ >= 0 && method_ < NoneMode;
+    return method_ >= 0 && method_ < Msp::NoneMode;
 }
 
 bool PartItem::isValidMass(int mass_)
@@ -52,7 +53,7 @@ bool PartItem::isValidCoord(int coord)
 bool PartItem::isValidIcon(QIcon icon_)
 {
     // Проверка иконки на пустоту и невалидный путь:
-    static const int w = 70;  // here 70 x 70 is calc_n.png size
+    static const int w = 70;
     static const int h = 70;
     return !icon_.isNull() && !icon_.pixmap(w, h).isNull();
 }
@@ -65,7 +66,7 @@ bool PartItem::isValidCenter(QVector3D mass_center_)
            isValidCoord(mass_center_.z());
 }
 
-ModeNum PartItem::getMethod()
+Msp::ModeNum PartItem::getMethod()
 {
     return eval_method;
 }
@@ -92,16 +93,20 @@ Material PartItem::getMaterial()
 
 void PartItem::setDefaultValues()
 {
-    // Сэттер для сброса значений в исходные,
-    // значения по умолчанию считаются невалидными
-    eval_method = NoneMode;
+    // Сэттер для сброса значений в исходные.
+    // Значения по умолчанию считаются невалидными
+    eval_method = Msp::NoneMode;
+    emit methodChanged();
     mass = -1;
+    emit massChanged();
     density = -1;
+    emit densityChanged();
     mass_center = {-1, -1, -1};
-    material = {};  // Вызывается конструктор по умолчанию
+    emit centerChanged();
+    material.setDetaultValues();  // Важно, чтобы сигналы Material были подключены
 }
 
-bool PartItem::setMethod(ModeNum eval_method_)
+bool PartItem::setMethod(Msp::ModeNum eval_method_)
 {
     // Сэттер способа расчета:
     bool success = eval_method != eval_method_ && isValidMethod(eval_method_);
@@ -159,7 +164,7 @@ bool PartItem::setMaterialName(QString material_name_)
     return material.setName(material_name_);
 }
 
-bool PartItem::setMaterialStyle(HatchStyleNum style_)
+bool PartItem::setMaterialStyle(Ssp::HatchStyleNum style_)
 {
     // Сэттер стиля штриховки:
     return material.setStyle(style_);
@@ -174,7 +179,7 @@ bool PartItem::setMaterialAngle(int angle_)
 QString PartItem::methodToString()
 {
     // Преобразование в строку:
-    return isValidMethod(eval_method) ? mode_names[eval_method] : "";
+    return isValidMethod(eval_method) ? Msp::mode_names[eval_method] : "";
 }
 
 QString PartItem::massToString()
@@ -228,7 +233,7 @@ QString PartItem::materialShortNameToString()
 
 QIcon PartItem::getMethodIcon()
 {
-    QIcon result(mode_icon_paths[eval_method]);
+    QIcon result(Msp::mode_icon_paths[eval_method]);
     if (!isValidIcon(result)){
         qCritical() << "Invalid method icon";
     }

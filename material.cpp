@@ -2,7 +2,7 @@
 #include <QDebug>
 
 Material::Material(QObject *parent, QString name_,
-                   HatchStyleNum hatch_style_, int hatch_angle_
+                   Ssp::HatchStyleNum hatch_style_, int hatch_angle_
                    ) :
     QObject(parent),
     name(name_),
@@ -35,7 +35,7 @@ QString Material::getShortName()
     return short_name;
 }
 
-HatchStyleNum Material::getStyle()
+Ssp::HatchStyleNum Material::getStyle()
 {
     return hatch_style;
 }
@@ -47,7 +47,7 @@ int Material::getAngle()
 
 QIcon Material::getStyleIcon()
 {
-    QIcon result(style_icon_paths[hatch_style]);
+    QIcon result(Ssp::style_icon_paths[hatch_style]);
     if (!isValidStyleIcon(result)){
         qCritical() << "Invalid style icon";
     }
@@ -60,10 +60,10 @@ bool Material::isValidName(QString name_)
     return !name_.split(' ').isEmpty();
 }
 
-bool Material::isValidStyle(HatchStyleNum style_)
+bool Material::isValidStyle(Ssp::HatchStyleNum style_)
 {
     // Валидация enum'a:
-    return style_ >= 0 && style_ < NoneStyle;
+    return style_ >= 0 && style_ < Ssp::NoneStyle;
 }
 
 bool Material::isValidAngle(int angle_)
@@ -86,6 +86,18 @@ bool Material::isValid()
     return isValidStyle(hatch_style) && isValidAngle(hatch_angle);
 }
 
+void Material::setDetaultValues()
+{
+    // Сэттер для сброса значений на по умолчанию.
+    // Значения по умолчанию считаются невалидными.
+    name = "";
+    emit nameChanged();
+    hatch_style = Ssp::NoneStyle;
+    emit styleChanged();
+    hatch_angle = -1;
+    emit angleChanged();
+}
+
 bool Material::setName(QString name_)
 {
     // Сэттер со встроенной валидацией:
@@ -98,7 +110,7 @@ bool Material::setName(QString name_)
     return success;
 }
 
-bool Material::setStyle(HatchStyleNum style_)
+bool Material::setStyle(Ssp::HatchStyleNum style_)
 {
     // Сэттер со встроенной валидацией:
     bool success = hatch_style != style_ && isValidStyle(style_);
@@ -135,7 +147,7 @@ QString Material::shortNameToString()
 QString Material::styleToString()
 {
     // Метод преобразования в строку:
-    return isValidStyle(hatch_style) ? style_names[hatch_style] : "";
+    return isValidStyle(hatch_style) ? Ssp::style_names[hatch_style] : "";
 }
 
 QString Material::angleToString()

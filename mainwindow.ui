@@ -59,6 +59,10 @@ QComboBox:disabled, QAbstractItemView:disabled, QTextEdit:disabled{
 	background: #f0f0f0;
 }
 
+QComboBox:hover{
+	border: 1 solid #22cce7;  /* Стиль должен идти перед :on, не после */
+}
+
 QComboBox:on{
 	border: 2 solid #22cce7;
 }
@@ -114,6 +118,10 @@ QPushButton {
                                 stop:0 #e5e5e5, stop:1 white);
 }
 
+QPushButton:hover{
+	border: 1 solid #22cce7;   /* Стиль должен идти перед :pressed, не после */
+}
+
 QPushButton:pressed{
 	border: 2 solid #22cce7;
 	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, 
@@ -123,17 +131,11 @@ QPushButton:pressed{
 QMessageBox QPushButton {
 	width: 100;
 	height: 26;
-    border: 1px solid #c8c8c8;
-    background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, 
-                                stop:0 #e5e5e5, stop:1 white);
 }
 
 QMessageBox QPushButton:pressed{
 	width: 100;
 	height: 26;
-	border: 2 solid #22cce7;
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, 
-                                stop:0 #e5e5e5, stop:1 white);
 }
 </string>
   </property>
@@ -144,14 +146,17 @@ QMessageBox QPushButton:pressed{
       <property name="minimumSize">
        <size>
         <width>120</width>
-        <height>26</height>
+        <height>30</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>120</width>
-        <height>26</height>
+        <height>30</height>
        </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>Добавить строку</string>
@@ -166,13 +171,13 @@ QMessageBox QPushButton:pressed{
       <property name="minimumSize">
        <size>
         <width>120</width>
-        <height>26</height>
+        <height>30</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>120</width>
-        <height>26</height>
+        <height>30</height>
        </size>
       </property>
       <property name="text">

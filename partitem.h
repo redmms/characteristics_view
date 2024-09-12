@@ -15,7 +15,7 @@ private:
     // Приватные поля:
     // Поля не проверяются соответствию режиму ввода FillMode. Это задача
     // UI класса. eval_method исключительно в роли поля способ расчёта.
-    ModeNum eval_method;  // Способ расчёта
+    Msp::ModeNum eval_method;  // Способ расчёта
     int mass;  // Масса
     int density;  // Плотность
     QVector3D mass_center;  // Координаты центра масс, внутри float'ы
@@ -26,13 +26,13 @@ private:
 
 public:
     // Конструктор:
-    explicit PartItem(QObject* parent = nullptr, ModeNum eval_method_ = NoneMode,
+    explicit PartItem(QObject* parent = nullptr, Msp::ModeNum eval_method_ = Msp::NoneMode,
                         int mass_ = -1, int density_ = -1,
                         QVector3D mass_center_ = {-1, -1, -1},
                         Material material_ = Material());
 
     // Методы валидации:
-    bool isValidMethod(ModeNum method_);
+    bool isValidMethod(Msp::ModeNum method_);
     bool isValidMass(int mass_);
     bool isValidDensity(int density_);
     bool isValidCoord(int coord);
@@ -40,7 +40,7 @@ public:
     bool isValidCenter(QVector3D mass_center_);
 
     // Геттеры:
-    ModeNum getMethod();
+    Msp::ModeNum getMethod();
     int getMass();
     int getDensity();
     QVector3D getCenter();
@@ -51,14 +51,14 @@ public:
     void setDefaultValues();
 
     // Сэттеры со встроенной валидацией:
-    bool setMethod(ModeNum eval_method_);
+    bool setMethod(Msp::ModeNum eval_method_);
     bool setMass(int mass_);
     bool setDensity(int density_);
     bool setCenter(QVector3D mass_center_);
     bool setMaterial(Material material_);  // Метод для удобства
     bool setMaterialName(QString material_name_);  // Потенциально можно
                                                    // использовать в модели
-    bool setMaterialStyle(HatchStyleNum style_);
+    bool setMaterialStyle(Ssp::HatchStyleNum style_);
     bool setMaterialAngle(int angle_);
 
     // Методы преобразования в строку для каждого поля, даже если оно уже

@@ -79,12 +79,12 @@ void FillMode::turnOff()
     }
 }
 
-QMap<QLineEdit*, QString> FillMode::getText()
+FillMode::InputData FillMode::getText()
 {
     // Получаем текст из полей ввода, видимых в этом режиме.
     // Видимость не гарантируется и обеспечивается инициализацией
     // списа edit_ptrs
-    QMap<QLineEdit*, QString> line_edit_input;
+    InputData line_edit_input;
     for (auto uiptr : edit_ptrs){
         line_edit_input[uiptr] = uiptr->text();
     }

@@ -7,8 +7,10 @@
 #include "helpers/materialhelper.h"
 #include "helpers/methodhelper.h"
 #include "helpers/stylehelper.h"
+#include <QPointer>
 
 PartModel::PartModel(int rows, QObject *parent) :
+    QObject(parent),
     parts{rows, {}},
     helpers{
         new MethodHelper(parts, helpers, this),
@@ -20,7 +22,7 @@ PartModel::PartModel(int rows, QObject *parent) :
         new AngleHelper(parts, helpers, this)
     },
     headers{
-        "способ расчёта", // please, add translations for these phrazes
+        "способ расчёта",
         "масса",
         "плотность",
         "центр масс",
@@ -30,10 +32,16 @@ PartModel::PartModel(int rows, QObject *parent) :
     }
 {}
 
-bool PartModel::isValidRow(int row) const
+bool PartModel::isValidAccessRow(int row) const
 {
     // Проверка индекса строки:
     return row >= 0 && row < parts.size();
+}
+
+bool PartModel::isValidInsertRow(int row) const
+{
+    // Проверка индекса строки:
+    return row >= 0 && row <= parts.size();
 }
 
 bool PartModel::isValidColumn(int column) const
@@ -61,7 +69,7 @@ QVariant PartModel::data(const QModelIndex &index, int role) const
     // Метод для отображения ячеек в представлении
 
     // Проверка индекса:
-    if (!index.isValid() || !isValidRow(index.row()) ||
+    if (!index.isValid() || !isValidAccessRow(index.row()) ||
         !isValidColumn(index.column())){
         return {};
     }
@@ -82,12 +90,11 @@ QVariant PartModel::data(const QModelIndex &index, int role) const
     }
 }
 
-bool PartModel::insertRow(int row, PartItem *part) // should we
-// check the pointer before adding, or when using?
+bool PartModel::insertRow(int row, PartItem *part)
 {
     // Метод вставки строки
     // Проверяем аргументы:
-    if (row < 0 || !part){
+    if (!isValidInsertRow(row) || !part){
         return false;
     }
 
@@ -97,7 +104,8 @@ bool PartModel::insertRow(int row, PartItem *part) // should we
     // Подключаем сигналы изменения полей детали, они же ячейки:
     for (auto helper : helpers){
         helper->connectPartSignal(part);
-        connect(helper, &AbstractHelper::dataChanged, this, &QAbstractItemModel::dataChanged); // should be abstract or not?
+        connect(helper, &AbstractHelper::dataChanged,
+                this, &QAbstractItemModel::dataChanged);
     }
 
     // Подключаем сигнал удаления детали:
@@ -111,7 +119,7 @@ bool PartModel::insertRow(int row, PartItem *part) // should we
     return true;
 }
 
-bool PartModel::appendRow(PartItem *part)
+void PartModel::appendRow(PartItem *part)
 {
     int row = parts.size();
     insertRow(row, part);
@@ -121,12 +129,16 @@ bool PartModel::removeRow(int row)
 {
     // Метод удаления строки
     // Проверяем аргументы:
-    if (!isValidRow(row)){
+    if (!isValidAccessRow(row)){
         return false;
     }
 
     // Удаляем строки-детали и уведомляем представление
     beginRemoveRows(QModelIndex(), row, row);
+    QPointer<PartItem> to_delete = parts[row];
+    if (to_delete){
+        to_delete->deleteLater();
+    }
     parts.remove(row);
     endRemoveRows();
     return true;
@@ -167,11 +179,7 @@ QVariant PartModel::headerData(int section, Qt::Orientation orientation,
 void PartModel::partDeleted(QObject *object)
 {
     // Очищаем строку из-под удаленной по указателю детали:
-//    PartItem* part = qobject_cast<PartItem*>(object);  // RV - should we check that или это лишнее?
-
-    removeRow(parts.indexOf((PartItem*)object)); // TODO
-
+    removeRow(parts.indexOf((PartItem*)object));  // Здесь нам не важна валидность
+    // указателя, поэтому используем C-style каст, указатель дополнительно
+    // проверяется в removeRow();
 }
-
-
-

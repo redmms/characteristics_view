@@ -15,7 +15,8 @@ private:
     QVector<QString> headers;  // Заголовки таблицы
 
     // Метод валидации индексов:
-    bool isValidRow(int row) const;
+    bool isValidAccessRow(int row) const;
+    bool isValidInsertRow(int row) const;
     bool isValidColumn(int column) const;
 
 public:
@@ -28,7 +29,7 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     bool insertRow(int row, PartItem* part);
-    bool appendRow(PartItem* part);  // Метод для удобства
+    void appendRow(PartItem* part);  // Метод для удобства
     bool removeRow(int row);
     bool setHeaderData(int section, const QVariant &value);
     QVariant headerData(int section, Qt::Orientation orientation,
