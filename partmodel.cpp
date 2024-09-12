@@ -10,7 +10,7 @@
 #include <QPointer>
 
 PartModel::PartModel(int rows, QObject *parent) :
-    QObject(parent),
+    QAbstractTableModel(parent),
     parts{rows, {}},
     helpers{
         new MethodHelper(parts, helpers, this),

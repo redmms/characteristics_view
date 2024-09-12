@@ -36,7 +36,6 @@ public:
     bool isValidName(QString name_);
     bool isValidStyle(Ssp::HatchStyleNum style_);
     bool isValidAngle(int angle_);
-    bool isValidStyleIcon(QIcon icon_);
     bool isValid();
 
     // Сэттер для сброса значений на по умолчанию.

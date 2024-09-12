@@ -4,7 +4,7 @@
 #include <QAbstractTableModel>
 #include <QVector>
 
-class PartModel : public QAbstractTableModel
+class PartModel : protected QAbstractTableModel
 {
     Q_OBJECT
 private:

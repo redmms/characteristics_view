@@ -47,11 +47,7 @@ int Material::getAngle()
 
 QIcon Material::getStyleIcon()
 {
-    QIcon result(Ssp::style_icon_paths[hatch_style]);
-    if (!isValidStyleIcon(result)){
-        qCritical() << "Invalid style icon";
-    }
-    return result;
+    return QIcon(Ssp::style_icon_paths[hatch_style]);
 }
 
 bool Material::isValidName(QString name_)
@@ -70,14 +66,6 @@ bool Material::isValidAngle(int angle_)
 {
     // Валидация по умолчанию:
     return angle_ >= 0;
-}
-
-bool Material::isValidStyleIcon(QIcon icon_)
-{
-    // Проверка иконки на пустоту и неверный путь:
-    static const int w = 120;  // here 120 x 25 is hatch_n.png size
-    static const int h = 25;
-    return !icon_.isNull() && !icon_.pixmap(w, h).isNull();
 }
 
 bool Material::isValid()

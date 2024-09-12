@@ -36,7 +36,6 @@ public:
     bool isValidMass(int mass_);
     bool isValidDensity(int density_);
     bool isValidCoord(int coord);
-    bool isValidIcon(QIcon icon_);
     bool isValidCenter(QVector3D mass_center_);
 
     // Геттеры:

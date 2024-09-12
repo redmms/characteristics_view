@@ -50,14 +50,6 @@ bool PartItem::isValidCoord(int coord)
     return isValidNum(coord);
 }
 
-bool PartItem::isValidIcon(QIcon icon_)
-{
-    // Проверка иконки на пустоту и невалидный путь:
-    static const int w = 70;
-    static const int h = 70;
-    return !icon_.isNull() && !icon_.pixmap(w, h).isNull();
-}
-
 bool PartItem::isValidCenter(QVector3D mass_center_)
 {
     // Валидация по умолчанию:
@@ -233,11 +225,7 @@ QString PartItem::materialShortNameToString()
 
 QIcon PartItem::getMethodIcon()
 {
-    QIcon result(Msp::mode_icon_paths[eval_method]);
-    if (!isValidIcon(result)){
-        qCritical() << "Invalid method icon";
-    }
-    return result;
+    return QIcon(Msp::mode_icon_paths[eval_method]);
 }
 
 QIcon PartItem::getMaterialStyleIcon()
