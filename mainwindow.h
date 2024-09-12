@@ -1,16 +1,14 @@
 #pragma once
-#include "partmodel.h"
 #include <QMainWindow>
-#include <QString>
-#include <QSortFilterProxyModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class QStandardItemModel;
+class PartModel;
 class QCloseEvent;
 class QItemSelection;
+class QSortFilterProxyModel;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

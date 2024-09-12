@@ -1,12 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "partmodel.h"
 #include "controllerdialog.h"
-#include <QStandardItemModel>
-#include <QStandardItem>
 #include <QList>
 #include <QSettings>
 #include <QItemSelection>
 #include <QTimer>
+#include <QString>
+#include <QSortFilterProxyModel>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

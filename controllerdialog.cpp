@@ -1,10 +1,9 @@
 #include "controllerdialog.h"
 #include "ui_controllerdialog.h"
+#include "partitem.h"
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
-#include <QStandardItem>
 #include <QMessageBox>
-#include <QDebug>
 #include <QTimer>
 
 ControllerDialog::ControllerDialog(QWidget *parent) :

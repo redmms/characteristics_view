@@ -1,7 +1,6 @@
 #pragma once
 #include "../partitem.h"
 #include <QVariant>
-#include <QObject>
 #include <QAbstractItemModel>
 #include <QModelIndex>
 

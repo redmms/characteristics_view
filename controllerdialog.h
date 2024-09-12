@@ -1,15 +1,13 @@
 #pragma once
 #include "fillmode.h"
 #include "modenum.h"
-#include "partitem.h"
 #include <QDialog>
-#include <QList>
+#include <QStringList>
 #include <QMap>
 
 namespace Ui { class ControllerDialog; }
-class QStandardItem;
 class QRegularExpressionValidator;
-class FillMode;
+class PartItem;
 class ControllerDialog : public QDialog
 {
     Q_OBJECT

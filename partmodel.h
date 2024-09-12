@@ -1,9 +1,9 @@
 #pragma once
 #include "partitem.h"
-#include "helpers/abstracthelper.h"
 #include <QAbstractTableModel>
 #include <QVector>
 
+class AbstractHelper;
 class PartModel : public QAbstractTableModel
 {
     Q_OBJECT

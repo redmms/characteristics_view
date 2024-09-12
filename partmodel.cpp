@@ -1,5 +1,4 @@
 #include "partmodel.h"
-#include "material.h"
 #include "helpers/anglehelper.h"
 #include "helpers/centerhelper.h"
 #include "helpers/densityhelper.h"
