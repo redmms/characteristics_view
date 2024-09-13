@@ -68,7 +68,7 @@ namespace Msp{
         for (auto name : {mass, density, copy}){
             QIcon icon(name);
             if (icon.isNull() || icon.pixmap(w, h).isNull()){
-                qWarning() << "QComboBox doesn't contain needed mode names";
+                qWarning() << "Some mode icon paths are incorrect";
             }
         }
     }

@@ -13,7 +13,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     validator(new QRegularExpressionValidator(
         QRegularExpression("^[0-9]{0,7}$"), this)),  // До 7 цифр, как во float,
     // не позволяет вводить - и +
-    current_mode{Msp::MassMode}
+    current_mode(Msp::MassMode)
 {
     ui->setupUi(this);
 
@@ -78,9 +78,9 @@ ControllerDialog::~ControllerDialog()
     delete ui;
 }
 
-PartItem *ControllerDialog::getInsertedLine(QObject *parent)
+PartItem* ControllerDialog::getInsertedLine(QObject *parent)
 {
-    // Получаем введенные данные и передаем владение:
+    // Получаем введенные данные и передаем владение деталью:
     part->setParent(parent);
     return part;
 }
@@ -88,7 +88,7 @@ PartItem *ControllerDialog::getInsertedLine(QObject *parent)
 bool ControllerDialog::eventFilter(QObject *object, QEvent *event)
 {
     // Выделяем всю строку для удобства пользователя:
-    QLineEdit* edit = static_cast<QLineEdit*>(object);
+    QLineEdit* edit = qobject_cast<QLineEdit*>(object);
     if(edit && event->type() == QEvent::FocusIn){
         QTimer::singleShot(0,edit,SLOT(selectAll()));
     }

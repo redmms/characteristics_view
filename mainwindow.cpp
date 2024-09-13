@@ -42,7 +42,7 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     // Сохраняем геометрию окна:
-    QSettings settings("MMD18soft", "PartParameteres");
+    QSettings settings("MMD18soft", "ControllerDialog");
     settings.setValue("geometry", saveGeometry());
     QWidget::closeEvent(event);
 }
@@ -50,7 +50,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::readSettings()
 {
     // Восстанавливаем геометрию окна:
-    QSettings settings("MMD18soft", "PartParameteres");
+    QSettings settings("MMD18soft", "ControllerDialog");
     restoreGeometry(settings.value("geometry").toByteArray());
 }
 

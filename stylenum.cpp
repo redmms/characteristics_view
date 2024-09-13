@@ -48,7 +48,7 @@ namespace Ssp{
         for (auto name : {metal, nature_soil, bump_soil, stone,
                           enhanced, stressed}){
             if (!all_items.contains(name)){
-                qWarning() << "QComboBox doesn't contain needed mode names";
+                qWarning() << "QComboBox doesn't contain needed style names";
             }
         }
     }
@@ -71,7 +71,7 @@ namespace Ssp{
         for (auto name : {metal, nature_soil, bump_soil, stone,
                           enhanced, stressed}){
             if (!all_items.contains(name)){
-                qWarning() << "QComboBox doesn't contain needed mode names";
+                qWarning() << "QComboBox doesn't contain needed style names";
             }
         }
     }
@@ -91,7 +91,7 @@ namespace Ssp{
              stressed}){
             QIcon icon(name);
             if (icon.isNull() || icon.pixmap(w, h).isNull()){
-                qWarning() << "QComboBox doesn't contain needed mode names";
+                qWarning() << "Some style icon paths are incorrect";
             }
         }
     }

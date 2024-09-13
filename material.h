@@ -23,7 +23,7 @@ public:
     Material(const Material& other);
 
     // Оператор копирования полей без сигналов:
-    bool operator=(const Material& other);
+    Material& operator=(const Material& other);
 
     // Геттеры:
     QString getName();

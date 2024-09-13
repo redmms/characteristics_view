@@ -18,11 +18,12 @@ Material::Material(const Material &other)
     hatch_angle = other.hatch_angle;
 }
 
-bool Material::operator=(const Material &other)
+Material& Material::operator=(const Material& other)
 {
     name = other.name;
     hatch_style = other.hatch_style;
     hatch_angle = other.hatch_angle;
+    return *this;
 }
 
 QString Material::getName()
@@ -71,7 +72,7 @@ bool Material::isValidAngle(int angle_)
 bool Material::isValid()
 {
     // Проверка объекта класса:
-    return isValidStyle(hatch_style) && isValidAngle(hatch_angle);
+    return isValidName(name) && isValidStyle(hatch_style) && isValidAngle(hatch_angle);
 }
 
 void Material::setDetaultValues()
@@ -79,6 +80,7 @@ void Material::setDetaultValues()
     // Сэттер для сброса значений на по умолчанию.
     // Значения по умолчанию считаются невалидными.
     name = "";
+    short_name = "";
     emit nameChanged();
     hatch_style = Ssp::NoneStyle;
     emit styleChanged();

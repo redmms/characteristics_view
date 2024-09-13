@@ -17,6 +17,3 @@ void AngleHelper::connectPartSignal(PartItem *part)
     // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
     connect(part, &PartItem::materialAngleChanged, this, &AngleHelper::findChangedIndex);
 }
-
-
-

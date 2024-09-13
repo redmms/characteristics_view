@@ -120,6 +120,7 @@ bool PartModel::insertRow(int row, PartItem *part)
 
 void PartModel::appendRow(PartItem *part)
 {
+    // Метод для удобства добавления в конец. Все проверки в insertRow
     int row = parts.size();
     insertRow(row, part);
 }
@@ -140,6 +141,7 @@ bool PartModel::removeRow(int row)
     }
     parts.remove(row);
     endRemoveRows();
+
     return true;
 }
 
@@ -154,6 +156,7 @@ bool PartModel::setHeaderData(int section, const QVariant &value)
     // Меняем заголовки:
     headers[section] = value.toString();
     emit headerDataChanged(Qt::Horizontal, section, section);
+
     return true;
 }
 
