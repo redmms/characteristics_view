@@ -167,6 +167,16 @@ QVariant PartModel::headerData(int column, Qt::Orientation orientation,
     return ret;
 }
 
+// Получение указателя на деталь, модель позволяет работать с деталями по указателю
+PartItem* PartModel::getPart(int row)
+{
+    PartItem* ret = nullptr;
+    if (isValidAccessRow(row)){
+        ret = parts[row];
+    }
+    return ret;
+}
+
 // Очищение строки из-под удаленной по указателю детали:
 void PartModel::partDeleted(QObject *object)
 {

@@ -33,6 +33,7 @@ public:
     bool setHeaderData(int column, const QVariant &value);
     QVariant headerData(int column, Qt::Orientation orientation,
                         int role) const override;
+    PartItem* getPart(int row);
 
 private slots:
     void partDeleted(QObject* object);

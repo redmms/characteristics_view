@@ -71,8 +71,12 @@ void MainWindow::on_addLineButton_clicked()
 
         // Чтобы проверить работу с PartItem по указателю добавьте
         // следующие строки после добавления детали в модель:
+
 //        new_row->setMaterialName("Changed Excluded part Bla Bla Bla");
 //        new_row->setCenter({99999, 126789, 21234});
+
+//        PartItem* item = model->getPart(0);
+//        delete item;
     }
 }
 
