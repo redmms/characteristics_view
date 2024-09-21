@@ -32,7 +32,7 @@ namespace Ssp{
         {StressedConcrete, ":/icons/stylebox_icons/hatch_6.png"}
     };
 
-    void checkStyleNames(QComboBox *box)
+    void checkStyleNames(const QComboBox *box)
     {
         // Проверка на cоответствие UI
         QString metal = style_names[Metal];
@@ -53,7 +53,7 @@ namespace Ssp{
         }
     }
 
-    void checkStyleNums(QComboBox *box)
+    void checkStyleNums(const QComboBox *box)
     {
         // Проверка на cоответствие UI
         // Точное сопоставление здесь необязательно, но

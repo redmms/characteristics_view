@@ -9,6 +9,7 @@ QVariant AngleHelper::getString(PartItem *part)
 QVariant AngleHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
+    Q_UNUSED(part)
     return {};
 }
 

@@ -5,6 +5,7 @@
 #include <QRegularExpression>
 #include <QMessageBox>
 #include <QTimer>
+#include <QDebug>
 
 ControllerDialog::ControllerDialog(QWidget *parent) :
     QDialog(parent),
@@ -122,6 +123,9 @@ void ControllerDialog::on_applyButton_clicked()
             else if (val.isEmpty()) {
                 empty_edits.push_back(it.key()); // Все остальные поля ввода
             }
+            else{
+                continue;
+            }
         }
     }
 
@@ -165,36 +169,44 @@ void ControllerDialog::on_applyButton_clicked()
 void ControllerDialog::setUpPart(InputData input, PartItem *new_part)
 {
     // Заполняем данные детали:
+    bool success = true;
     switch(current_mode){
     case Msp::MassMode:
-        new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
-        new_part->setMass(input.value(ui->massEdit, "!").toInt());
+        success &= new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
+        success &= new_part->setMass(input.value(ui->massEdit, "!").toInt());
         if (ui->coordBox->isChecked()){
             QString x = input.value(ui->xEdit, "!");
             QString y = input.value(ui->yEdit, "!");
             QString z = input.value(ui->zEdit, "!");
             QVector3D center{x.toFloat(), y.toFloat(), z.toFloat()};
-            new_part->setCenter(center);
+            success &= new_part->setCenter(center);
         }
-        new_part->setMaterialName(input.value(ui->materialEdit, "!"));
-        new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
-        new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        success &= new_part->setMaterialName(input.value(ui->materialEdit, "!"));
+        success &= new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
+        success &= new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
     case Msp::DensityMode:
-        new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
-        new_part->setDensity(input.value(ui->densityEdit, "!").toInt());
-        new_part->setMaterialName(input.value(ui->materialEdit, "!"));
-        new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
-        new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        success &= new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
+        success &= new_part->setDensity(input.value(ui->densityEdit, "!").toInt());
+        success &= new_part->setMaterialName(input.value(ui->materialEdit, "!"));
+        success &= new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
+        success &= new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
     case Msp::CopyMode:
-        new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
-        new_part->setMass(input.value(ui->massEdit, "!").toInt());
-        new_part->setDensity(input.value(ui->densityEdit, "!").toInt());
-        new_part->setMaterialName(input.value(ui->materialEdit, "!"));
-        new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
-        new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        success &= new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
+        success &= new_part->setMass(input.value(ui->massEdit, "!").toInt());
+        success &= new_part->setDensity(input.value(ui->densityEdit, "!").toInt());
+        success &= new_part->setMaterialName(input.value(ui->materialEdit, "!"));
+        success &= new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
+        success &= new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
         break;
+    default:
+        qDebug() << "Unhandled fill mode passed as an argument";
+        break;
+    }
+    if (!success){
+        qDebug() << "Some part members setup failed."
+                    "Don't forget to use a validator for user input";
     }
 }
 
@@ -226,7 +238,7 @@ void ControllerDialog::showEmptyWarningBox(QStringList empty_names)
 void ControllerDialog::on_methodBox_currentIndexChanged(int index)
 {
     // Меняем режим ввода:
-    Msp::ModeNum new_mode = Msp::ModeNum(index);
+    Msp::ModeNum new_mode = static_cast<Msp::ModeNum>(index);
     modes[current_mode].turnOff();
     modes[new_mode].turnOn();
     modes[new_mode].fillInDefaultValues();

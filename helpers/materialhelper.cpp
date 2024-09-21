@@ -9,6 +9,7 @@ QVariant MaterialHelper::getString(PartItem *part)
 QVariant MaterialHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
+    Q_UNUSED(part)
     return {};
 }
 

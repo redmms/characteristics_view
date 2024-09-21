@@ -34,7 +34,7 @@ void AbstractHelper::findChangedIndex()
     // Отправляем сигнал с нужной сигнатурой представлению:
     QModelIndex idx = (qobject_cast<QAbstractItemModel*>(parent()))->
                       index(i, j);
-    QVector<int> roles{int(Qt::DisplayRole)};
+    QVector<int> roles{static_cast<int>(Qt::DisplayRole)};
     emit dataChanged(idx, idx, roles);
 }
 

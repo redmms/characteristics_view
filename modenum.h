@@ -20,7 +20,7 @@ namespace Msp{
     extern const QMap<ModeNum, QString> mode_icon_paths;
 
     // Методы проверки словарей
-    void checkModeNames(QComboBox* box);
-    void checkModeNums(QComboBox* box);
+    void checkModeNames(const QComboBox* box);
+    void checkModeNums(const QComboBox* box);
     void checkModeIconPaths();
 }

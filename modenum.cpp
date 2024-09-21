@@ -23,7 +23,7 @@ namespace Msp{
         {CopyMode, ":/icons/methodbox_icons/calc_3.png"}
     };
 
-    void checkModeNames(QComboBox* box)
+    void checkModeNames(const QComboBox* box)
     {
         // Проверка на cоответствие UI
         QString mass = mode_names[MassMode];
@@ -40,7 +40,7 @@ namespace Msp{
         }
     }
 
-    void checkModeNums(QComboBox* box)
+    void checkModeNums(const QComboBox* box)
     {
         // Проверка на cоответствие UI
         QString mass = mode_nums.key(MassMode);

@@ -9,6 +9,7 @@ QVariant CenterHelper::getString(PartItem *part)
 QVariant CenterHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
+    Q_UNUSED(part)
     return {};
 }
 

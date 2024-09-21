@@ -9,6 +9,7 @@ QVariant DensityHelper::getString(PartItem *part)
 QVariant DensityHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
+    Q_UNUSED(part)
     return {};
 }
 

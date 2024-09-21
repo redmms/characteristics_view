@@ -44,10 +44,10 @@ bool PartItem::isValidDensity(int density_)
     return isValidNum(density_);
 }
 
-bool PartItem::isValidCoord(int coord)
+bool PartItem::isValidCoord(float coord)
 {
     // Валидация по умолчанию:
-    return isValidNum(coord);
+    return isValidNum(static_cast<int>(coord));
 }
 
 bool PartItem::isValidCenter(QVector3D mass_center_)
@@ -191,9 +191,9 @@ QString PartItem::centerToString()
     // Преобразование в строку:
     QString result = "";
     if (isValidCenter(mass_center)){
-        QString x = QString::number(int(mass_center.x()));
-        QString y = QString::number(int(mass_center.y()));
-        QString z = QString::number(int(mass_center.z()));
+        QString x = QString::number(static_cast<int>(mass_center.x()));
+        QString y = QString::number(static_cast<int>(mass_center.y()));
+        QString z = QString::number(static_cast<int>(mass_center.z()));
         result = x + ", " + y + ", " + z;
     }
     return result;

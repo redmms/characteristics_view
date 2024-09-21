@@ -9,6 +9,7 @@ QVariant MassHelper::getString(PartItem *part)
 QVariant MassHelper::getIcon(PartItem *part)
 {
     // Иконка, либо пустой QVariant для Qt::DecorationRole:
+    Q_UNUSED(part)
     return {};
 }
 

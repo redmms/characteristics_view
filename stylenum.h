@@ -22,7 +22,7 @@ namespace Ssp{
     extern const QMap<HatchStyleNum, QString> style_icon_paths;
 
     // Методы проверки словарей
-    void checkStyleNames(QComboBox* box);
-    void checkStyleNums(QComboBox* box);
+    void checkStyleNames(const QComboBox* box);
+    void checkStyleNums(const QComboBox* box);
     void checkStyleIconPaths();
 }

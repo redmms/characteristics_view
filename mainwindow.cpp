@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QString>
 #include <QSortFilterProxyModel>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -51,7 +52,10 @@ void MainWindow::readSettings()
 {
     // Восстанавливаем геометрию окна:
     QSettings settings("MMD18soft", "ControllerDialog");
-    restoreGeometry(settings.value("geometry").toByteArray());
+    bool success = restoreGeometry(settings.value("geometry").toByteArray());
+    if (!success){
+        qDebug() << "Couldn't restore geometry";
+    }
 }
 
 void MainWindow::on_addLineButton_clicked()
@@ -77,13 +81,18 @@ void MainWindow::on_deleteLineButton_clicked()
     // Удаляем строку:
     int index = ui->tableView->currentIndex().row();
     if (index >= 0 && index < model->rowCount()){
-        model->removeRow(index);
+        bool success = model->removeRow(index);
+        if (!success){
+            qDebug() << "Couldn't remove a row";
+        }
     }
 }
 
 void MainWindow::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     // Включаем/отключаем кнопку Удалить строку:
+    Q_UNUSED(selected)
+    Q_UNUSED(deselected)
     QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
     ui->deleteLineButton->setEnabled(!indexes.isEmpty());
 }

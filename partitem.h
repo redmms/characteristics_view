@@ -35,7 +35,7 @@ public:
     bool isValidMethod(Msp::ModeNum method_);
     bool isValidMass(int mass_);
     bool isValidDensity(int density_);
-    bool isValidCoord(int coord);
+    bool isValidCoord(float coord);
     bool isValidCenter(QVector3D mass_center_);
 
     // Геттеры:
