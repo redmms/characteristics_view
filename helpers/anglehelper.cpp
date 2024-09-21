@@ -14,6 +14,6 @@ QVariant AngleHelper::getIcon(PartItem *part)
 
 void AngleHelper::connectPartSignal(PartItem *part)
 {
-    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
+    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой помощник:
     connect(part, &PartItem::materialAngleChanged, this, &AngleHelper::findChangedIndex);
 }

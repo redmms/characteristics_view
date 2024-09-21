@@ -60,7 +60,7 @@ QComboBox:disabled, QAbstractItemView:disabled, QTextEdit:disabled{
 }
 
 QComboBox:hover{
-	border: 1 solid #22cce7;  /* Стиль должен идти перед :on, не после */
+	border: 1 solid #008cf7;  /* Стиль должен идти перед :on, не после */
 }
 
 QComboBox:on{
@@ -119,7 +119,7 @@ QPushButton {
 }
 
 QPushButton:hover{
-	border: 1 solid #22cce7;   /* Стиль должен идти перед :pressed, не после */
+	border: 1 solid #008cf7;   /* Стиль должен идти перед :pressed, не после */
 }
 
 QPushButton:pressed{

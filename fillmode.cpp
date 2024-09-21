@@ -3,13 +3,14 @@
 #include <QLineEdit>
 #include <QWidget>
 
-FillMode::FillMode( const QList<QWidget *> &hide_ptrs_,
-                    const QList<QWidget *> &show_ptrs_,
-                    const QList<QWidget *> &enable_ptrs_,
-                    const QList<QWidget *> &disable_ptrs_,
-                    const QList<QLineEdit *> &edit_ptrs_,
-                    QLineEdit* const default_focus_ptr_,
+FillMode::FillMode( QList<QWidget*> hide_ptrs_,
+                    QList<QWidget*> show_ptrs_,
+                    QList<QWidget*> enable_ptrs_,
+                    QList<QWidget*> disable_ptrs_,
+                    QList<QLineEdit*> edit_ptrs_,
+                    QLineEdit* default_focus_ptr_,
                     QString default_value_,
+                    InputData custom_defaults_,
                     QObject* event_filter_) :
     hide_ptrs(hide_ptrs_),
     show_ptrs(show_ptrs_),
@@ -18,10 +19,8 @@ FillMode::FillMode( const QList<QWidget *> &hide_ptrs_,
     edit_ptrs(edit_ptrs_),
     default_focus_ptr(default_focus_ptr_),
     default_value(default_value_),
+    custom_defaults(custom_defaults_),
     event_filter(event_filter_)
-{}
-
-FillMode::FillMode()
 {}
 
 void FillMode::turnOn()
@@ -91,24 +90,12 @@ FillMode::InputData FillMode::getText()
     return line_edit_input;
 }
 
-void FillMode::fillInDefaultValue(QLineEdit *uiptr, QString defval)
-{
-    // Заполняем поле ввода значением по умолчанию:
-    default_values[uiptr] = defval;
-}
-
-void FillMode::clearDefaultValues()
-{
-    // Очищаем словарь пользовательских дефолтных значений:
-    default_values.clear();
-}
-
 void FillMode::fillInDefaultValues()
 {
     // Заполняем поля ввода пользовательскими значениями по умолчанию:
     for (auto uiptr : edit_ptrs){
-        if (default_values.count(uiptr)){
-            uiptr->setText(default_values[uiptr]);
+        if (custom_defaults.count(uiptr)){
+            uiptr->setText(custom_defaults[uiptr]);
         }
         else{
             uiptr->setText(default_value);
@@ -125,47 +112,82 @@ void FillMode::activateDefaultFocus()
     }
 }
 
-void FillMode::setHide(QList<QWidget *> hide_ptrs_)
+FillModeBuilder& FillModeBuilder::setHide(QList<QWidget*> hide_ptrs_)
 {
     hide_ptrs = hide_ptrs_;
+    return *this;
 }
 
-void FillMode::setShow(QList<QWidget *> show_ptrs_)
+FillModeBuilder& FillModeBuilder::setShow(QList<QWidget*> show_ptrs_)
 {
     show_ptrs = show_ptrs_;
+    return *this;
 }
 
-void FillMode::setEnable(QList<QWidget *> enable_ptrs_)
+FillModeBuilder& FillModeBuilder::setEnable(QList<QWidget*> enable_ptrs_)
 {
     enable_ptrs = enable_ptrs_;
+    return *this;
 }
 
-void FillMode::setDisable(QList<QWidget *> disable_ptrs_)
+FillModeBuilder& FillModeBuilder::setDisable(QList<QWidget*> disable_ptrs_)
 {
     disable_ptrs = disable_ptrs_;
+    return *this;
 }
 
-void FillMode::setEdit(QList<QLineEdit *> edit_ptrs_)
+FillModeBuilder& FillModeBuilder::setEdit(QList<QLineEdit*> edit_ptrs_)
 {
     edit_ptrs = edit_ptrs_;
+    return *this;
 }
 
-void FillMode::setDefaultFocusPtr(QLineEdit *default_focus_ptr_)
+FillModeBuilder& FillModeBuilder::setDefaultFocusPtr(QLineEdit* default_focus_ptr_)
 {
     default_focus_ptr = default_focus_ptr_;
+    return *this;
 }
 
-void FillMode::fillInDefaultValue(QString default_value_)
+FillModeBuilder& FillModeBuilder::setDefaultValue(QString default_value_)
 {
     default_value = default_value_;
+    return *this;
 }
 
-void FillMode::setDefaultValues(InputData default_values_)
+FillModeBuilder& FillModeBuilder::setCustomDefaults(InputData custom_defaults_)
 {
-    default_values = default_values_;
+    custom_defaults = custom_defaults_;
+    return *this;
 }
 
-void FillMode::setEventFilterPtr(QObject *event_filter_)
+FillModeBuilder& FillModeBuilder::setEventFilterPtr(QObject *event_filter_)
 {
     event_filter = event_filter_;
+    return *this;
+}
+
+FillMode FillModeBuilder::build() const
+{
+    return FillMode(hide_ptrs,
+                    show_ptrs,
+                    enable_ptrs,
+                    disable_ptrs,
+                    edit_ptrs,
+                    default_focus_ptr,
+                    default_value,
+                    custom_defaults,
+                    event_filter);
+}
+
+QScopedPointer<FillMode> FillModeBuilder::buildScoped() const
+{
+    return QScopedPointer<FillMode>(new FillMode(hide_ptrs,
+                                                 show_ptrs,
+                                                 enable_ptrs,
+                                                 disable_ptrs,
+                                                 edit_ptrs,
+                                                 default_focus_ptr,
+                                                 default_value,
+                                                 custom_defaults,
+                                                 event_filter));
 }

@@ -14,7 +14,7 @@ QVariant MassHelper::getIcon(PartItem *part)
 
 void MassHelper::connectPartSignal(PartItem *part)
 {
-    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
+    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой помощник:
     connect(part, &PartItem::massChanged, this, &MassHelper::findChangedIndex);
 }
 

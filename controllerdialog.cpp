@@ -13,9 +13,44 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     validator(new QRegularExpressionValidator(
         QRegularExpression("^[0-9]{0,7}$"), this)),  // До 7 цифр, как во float,
     // не позволяет вводить - и +
-    current_mode(Msp::MassMode)
+    current_mode(Msp::MassMode),
+    modes{}
 {
     ui->setupUi(this);
+
+    // Описываем режимы ввода:
+    modes = {{Msp::MassMode, {FillModeBuilder()
+                            .setHide({ui->densityFrame})
+                            .setShow({ui->coordBox, ui->massFrame})
+                            .setEnable({})
+                            .setDisable({})
+                            .setEdit({ui->massEdit, ui->xEdit, ui->yEdit,ui->zEdit,
+                                   ui->angleEdit})
+                            .setDefaultFocusPtr(ui->massEdit)
+                            .setDefaultValue("0")
+                            .setEventFilterPtr(this)
+                            .build()}},
+            {Msp::DensityMode, {FillModeBuilder()
+                            .setHide({ui->coordBox, ui->massFrame})
+                            .setShow({ui->densityFrame})
+                            .setEnable({})
+                            .setDisable({})
+                            .setEdit({ui->densityEdit, ui->angleEdit})
+                            .setDefaultFocusPtr(ui->densityEdit)
+                            .setDefaultValue("0")
+                            .setEventFilterPtr(this)
+                            .build()}},
+            {Msp::CopyMode, {FillModeBuilder()
+                            .setHide({ui->coordBox})
+                            .setShow({ui->massFrame, ui->densityFrame})
+                            .setEnable({})
+                            .setDisable({ui->massEdit, ui->densityEdit, ui->styleBox,
+                                         ui->angleEdit, ui->materialEdit})
+                            .setEdit({ui->massEdit, ui->densityEdit, ui->angleEdit})
+                            .setDefaultFocusPtr(nullptr)
+                            .setDefaultValue("0")
+                            .setEventFilterPtr(this)
+                            .build()}}};
 
     // Проверяем словари для работы с enum на соответствие UI:
     Msp::checkModeNames(ui->methodBox);
@@ -25,40 +60,6 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     Ssp::checkStyleNames(ui->styleBox);
     Ssp::checkStyleNums(ui->styleBox);
     Ssp::checkStyleIconPaths();
-
-    // Описываем режимы ввода:
-    modes = {{Msp::MassMode, {}},
-             {Msp::DensityMode, {}},
-             {Msp::CopyMode, {}}};
-
-    modes[Msp::MassMode].setHide({ui->densityFrame});
-    modes[Msp::MassMode].setShow({ui->coordBox, ui->massFrame});
-    modes[Msp::MassMode].setEnable({});
-    modes[Msp::MassMode].setDisable({});
-    modes[Msp::MassMode].setEdit({ui->massEdit, ui->xEdit, ui->yEdit,ui->zEdit,
-                             ui->angleEdit});
-    modes[Msp::MassMode].setDefaultFocusPtr(ui->massEdit);
-    modes[Msp::MassMode].fillInDefaultValue("0");
-    modes[Msp::MassMode].setEventFilterPtr(this);
-
-    modes[Msp::DensityMode].setHide({ui->coordBox, ui->massFrame});
-    modes[Msp::DensityMode].setShow({ui->densityFrame});
-    modes[Msp::DensityMode].setEnable({});
-    modes[Msp::DensityMode].setDisable({});
-    modes[Msp::DensityMode].setEdit({ui->densityEdit, ui->angleEdit});
-    modes[Msp::DensityMode].setDefaultFocusPtr(ui->densityEdit);
-    modes[Msp::DensityMode].fillInDefaultValue("0");
-    modes[Msp::DensityMode].setEventFilterPtr(this);
-
-    modes[Msp::CopyMode].setHide({ui->coordBox});
-    modes[Msp::CopyMode].setShow({ui->massFrame, ui->densityFrame});
-    modes[Msp::CopyMode].setEnable({});
-    modes[Msp::CopyMode].setDisable({ui->massEdit, ui->densityEdit, ui->styleBox,
-                                ui->angleEdit, ui->materialEdit});
-    modes[Msp::CopyMode].setEdit({ui->massEdit, ui->densityEdit, ui->angleEdit});
-    modes[Msp::CopyMode].setDefaultFocusPtr(nullptr);
-    modes[Msp::CopyMode].fillInDefaultValue("0");
-    modes[Msp::CopyMode].setEventFilterPtr(this);
 
     // Устанавливаем валидатор:
     for (auto uiptr : {ui->massEdit, ui->xEdit, ui->yEdit, ui->zEdit,
@@ -90,7 +91,7 @@ bool ControllerDialog::eventFilter(QObject *object, QEvent *event)
     // Выделяем всю строку для удобства пользователя:
     QLineEdit* edit = qobject_cast<QLineEdit*>(object);
     if(edit && event->type() == QEvent::FocusIn){
-        QTimer::singleShot(0,edit,SLOT(selectAll()));
+        QTimer::singleShot(0, edit, SLOT(selectAll()));
     }
     return QDialog::eventFilter(object, event);
 }
@@ -125,7 +126,7 @@ void ControllerDialog::on_applyButton_clicked()
     }
 
     // Запоминаем где искать имена каждого поля ввода, видимые пользователю:
-    QMap<QObject*, QLabel*> edit_labels{
+    static QMap<QObject*, QLabel*> edit_labels{
         {ui->massEdit, ui->massLabel},
         {ui->densityEdit, ui->densityLabel},
         {ui->xEdit, ui->xLabel},
@@ -209,10 +210,6 @@ void ControllerDialog::showEmptyWarningBox(QStringList empty_names)
             inner_text.push_back("\", ");
         }
         inner_text.chop(2);
-
-        // Показываем модальное окно предупреждения:
-        QMessageBox msg_box(this);
-        msg_box.setWindowTitle("Пустые значения");
         QString warning_text = "";
         if (empty_names.size() > 1){
             warning_text = "Поля " + inner_text + " не заполнены.";
@@ -220,10 +217,9 @@ void ControllerDialog::showEmptyWarningBox(QStringList empty_names)
         else{
             warning_text = "Поле " + inner_text + " не заполнено.";
         }
-        msg_box.setText(warning_text);
-        msg_box.setIcon(QMessageBox::Warning);
-        msg_box.addButton("Заполнить", QMessageBox::AcceptRole);
-        msg_box.exec();
+
+        // Показываем модальное окно предупреждения:
+        QMessageBox::warning(this, "Пустые значения", warning_text);
     }
 }
 

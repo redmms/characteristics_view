@@ -12,7 +12,6 @@ private:
     QVector<PartItem*> parts;  // Данные о деталях, содержимое таблицы
     const QVector<AbstractHelper*> helpers;  // Вспомогательные объекты
     // для работы с полями PartItem по индексу
-    QVector<QString> headers;  // Заголовки таблицы
 
     // Метод валидации индексов:
     bool isValidAccessRow(int row) const;
@@ -31,8 +30,8 @@ public:
     bool insertRow(int row, PartItem* part);
     void appendRow(PartItem* part);  // Метод для удобства
     bool removeRow(int row);
-    bool setHeaderData(int section, const QVariant &value);
-    QVariant headerData(int section, Qt::Orientation orientation,
+    bool setHeaderData(int column, const QVariant &value);
+    QVariant headerData(int column, Qt::Orientation orientation,
                         int role) const override;
 
 private slots:

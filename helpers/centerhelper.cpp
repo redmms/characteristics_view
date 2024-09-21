@@ -14,7 +14,7 @@ QVariant CenterHelper::getIcon(PartItem *part)
 
 void CenterHelper::connectPartSignal(PartItem *part)
 {
-    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
+    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой помощник:
     connect(part, &PartItem::centerChanged, this, &CenterHelper::findChangedIndex);
 }
 

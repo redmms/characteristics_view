@@ -14,7 +14,7 @@ QVariant DensityHelper::getIcon(PartItem *part)
 
 void DensityHelper::connectPartSignal(PartItem *part)
 {
-    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
+    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой помощник:
     connect(part, &PartItem::densityChanged, this, &DensityHelper::findChangedIndex);
 }
 

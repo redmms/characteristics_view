@@ -3,22 +3,29 @@
 #include <QVariant>
 #include <QAbstractItemModel>
 #include <QModelIndex>
+#include <QString>
 
 class AbstractHelper : public QObject
 {
     Q_OBJECT
 private:
-    // Храним ссылки на контейнеры деталей и хэлперов, чтобы находить индексы
-    // колонок и столбцов соответственно. Они нужны всем наследникам, поэтому
+    // Храним ссылки на контейнеры деталей и помощников, чтобы находить индексы
+    // строк и столбцов соответственно. Они нужны всем наследникам, поэтому
     // здесь.
     const QVector<PartItem*>& parts;
     const QVector<AbstractHelper*>& helpers;
+    QString header;
 
 public:
     // Конструктор:
-    AbstractHelper(const QVector<PartItem*>& parts_,
-                   const QVector<AbstractHelper*>& helpers_,
-                   QObject *parent = nullptr);
+    explicit AbstractHelper(const QVector<PartItem*>& parts_,
+                           const QVector<AbstractHelper*>& helpers_,
+                           QString header_ = "",
+                           QObject* parent = nullptr);
+
+    // Невиртуальные методы:
+    void setHeader(QString header_);
+    QString getHeader();
 
     // Виртуальные методы:
     virtual QVariant getString(PartItem* part) = 0;

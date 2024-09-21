@@ -12,22 +12,13 @@ PartModel::PartModel(int rows, QObject *parent) :
     QAbstractTableModel(parent),
     parts{rows, {}},
     helpers{
-        new MethodHelper(parts, helpers, this),
-        new MassHelper(parts, helpers, this),
-        new DensityHelper(parts, helpers, this),
-        new CenterHelper(parts, helpers, this),
-        new MaterialHelper(parts, helpers, this),
-        new StyleHelper(parts, helpers, this),
-        new AngleHelper(parts, helpers, this)
-    },
-    headers{
-        "способ расчёта",
-        "масса",
-        "плотность",
-        "центр масс",
-        "материал",
-        "стиль штриховки",
-        "угол штриховки"
+        new MethodHelper(parts, helpers, "способ расчёта", this),
+        new MassHelper(parts, helpers, "масса", this),
+        new DensityHelper(parts, helpers, "плотность", this),
+        new CenterHelper(parts, helpers, "центр масс", this),
+        new MaterialHelper(parts, helpers, "материал", this),
+        new StyleHelper(parts, helpers, "стиль штриховки", this),
+        new AngleHelper(parts, helpers, "угол штриховки", this)
     }
 {}
 
@@ -76,12 +67,12 @@ QVariant PartModel::data(const QModelIndex &index, int role) const
     int i = index.row();
     int j = index.column();
 
-    // Свой хэлпер для каждой колонки, своя деталь для каждой строки:
+    // Свой помощник для каждого столбца, своя деталь для каждой строки:
     switch (role) {
     case Qt::DisplayRole:
         return helpers[j]->getString(parts[i]);
     case Qt::ToolTipRole:
-        return headers[j];
+        return helpers[j]->getHeader();
     case Qt::DecorationRole:
         return helpers[j]->getIcon(parts[i]);
     default:
@@ -145,33 +136,33 @@ bool PartModel::removeRow(int row)
     return true;
 }
 
-bool PartModel::setHeaderData(int section, const QVariant &value)
+bool PartModel::setHeaderData(int column, const QVariant &value)
 {
     // Сэттер для заголовка таблицы
     // Проверяем аргументы:
-    if (!isValidColumn(section)){
+    if (!isValidColumn(column)){
         return false;
     }
 
     // Меняем заголовки:
-    headers[section] = value.toString();
-    emit headerDataChanged(Qt::Horizontal, section, section);
+    helpers[column]->setHeader(value.toString());
+    emit headerDataChanged(Qt::Horizontal, column, column);
 
     return true;
 }
 
-QVariant PartModel::headerData(int section, Qt::Orientation orientation,
+QVariant PartModel::headerData(int column, Qt::Orientation orientation,
                                  int role) const
 {
     // Метод для отображения ячеек заголовка в представлении
     // Проверяем аргументы:
-    if (!isValidColumn(section)){
+    if (!isValidColumn(column)){
         return {};
     }
 
     // Возвращаем заголовок
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole){
-        return headers.at(section);
+        return helpers[column]->getHeader();
     }
     else{
         return {};

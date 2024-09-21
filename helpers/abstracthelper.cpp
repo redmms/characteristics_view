@@ -1,10 +1,24 @@
 #include "abstracthelper.h"
 
-AbstractHelper::AbstractHelper(const QVector<PartItem *> &parts_, const QVector<AbstractHelper *> &helpers_, QObject *parent) :
+AbstractHelper::AbstractHelper(const QVector<PartItem*>& parts_,
+                               const QVector<AbstractHelper*>& helpers_,
+                               QString header_,
+                               QObject *parent) :
     QObject{parent},
     parts(parts_),
-    helpers(helpers_)
+    helpers(helpers_),
+    header(header_)
 {}
+
+void AbstractHelper::setHeader(QString header_)
+{
+    header = header_;
+}
+
+QString AbstractHelper::getHeader()
+{
+    return header;
+}
 
 void AbstractHelper::findChangedIndex()
 {

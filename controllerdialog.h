@@ -17,8 +17,8 @@ private:
     Ui::ControllerDialog *ui;  // Указатель на UI
     PartItem* part;  // Введенные данные о детали
     QRegularExpressionValidator* validator;  // Валидатор ввода
-    QMap<Msp::ModeNum, FillMode> modes;  // Описание каждого режима ввода
     Msp::ModeNum current_mode;  // Текущий режим ввода
+    QMap<Msp::ModeNum, FillMode> modes;  // Описание каждого режима ввода
 
     // Методы для обработки данных о детали:
     void setUpPart(InputData input, PartItem* new_part);

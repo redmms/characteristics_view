@@ -6,8 +6,11 @@ class MassHelper : public AbstractHelper
     Q_OBJECT
 public:
     // Конструктор:
-    MassHelper( const QVector<PartItem *> &parts_, const QVector<AbstractHelper *> &helpers_, QObject *parent = nullptr) :
-        AbstractHelper( parts_, helpers_, parent){}
+    explicit MassHelper(const QVector<PartItem*>& parts_,
+                       const QVector<AbstractHelper*>& helpers_,
+                       QString header_ = "",
+                       QObject* parent = nullptr) :
+        AbstractHelper(parts_, helpers_, header_, parent){}
 
     // Переопределенные методы для каждого столбца:
     QVariant getString(PartItem* part) override;

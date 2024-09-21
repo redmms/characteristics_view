@@ -47,7 +47,7 @@ public:
 
     // Сэттер для сброса значений в исходные,
     // значения по умолчанию считаются невалидными
-    void setDefaultValues();
+    void setCustomDefaults();
 
     // Сэттеры со встроенной валидацией:
     bool setMethod(Msp::ModeNum eval_method_);
@@ -61,7 +61,7 @@ public:
     bool setMaterialAngle(int angle_);
 
     // Методы преобразования в строку для каждого поля, даже если оно уже
-    // строка. Сделано для удобства вызова из хэлперов модели.
+    // строка. Сделано для удобства вызова из помощников модели.
     QString methodToString();
     QString massToString();
     QString densityToString();

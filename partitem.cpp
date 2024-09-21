@@ -83,7 +83,7 @@ Material PartItem::getMaterial()
     return material;
 }
 
-void PartItem::setDefaultValues()
+void PartItem::setCustomDefaults()
 {
     // Сэттер для сброса значений в исходные.
     // Значения по умолчанию считаются невалидными

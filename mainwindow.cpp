@@ -84,6 +84,6 @@ void MainWindow::on_deleteLineButton_clicked()
 void MainWindow::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     // Включаем/отключаем кнопку Удалить строку:
-    QModelIndexList indexes = selected.indexes();
+    QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
     ui->deleteLineButton->setEnabled(!indexes.isEmpty());
 }

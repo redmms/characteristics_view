@@ -14,6 +14,6 @@ QVariant MethodHelper::getIcon(PartItem *part)
 
 void MethodHelper::connectPartSignal(PartItem *part)
 {
-    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой хэлпер:
+    // Каждая ячейка столбца Угол уведомляет об изменении вначале свой помощник:
     connect(part, &PartItem::methodChanged, this, &MethodHelper::findChangedIndex);
 }
