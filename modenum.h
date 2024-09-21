@@ -13,13 +13,27 @@ namespace Msp{
         NoneMode
     };
 
-    extern const QMap<ModeNum, QString> mode_names;
+    // Словари строковых имен enum режима:
+    static const QMap<ModeNum, QString> mode_names{
+        {MassMode, "По массе"},
+        {DensityMode, "По плотности"},
+        {CopyMode, "По данным источника копирования"}
+    };
 
-    extern const QMap<QString, ModeNum> mode_nums;
+    static const QMap<QString, ModeNum> mode_nums{
+        {"По массе", MassMode},
+        {"По плотности", DensityMode},
+        {"По данным источника копирования", CopyMode}
+    };
 
-    extern const QMap<ModeNum, QString> mode_icon_paths;
+    // Словарь путей иконок режима:
+    static const QMap<ModeNum, QString> mode_icon_paths{
+        {MassMode, ":/icons/methodbox_icons/calc_1.png"},
+        {DensityMode, ":/icons/methodbox_icons/calc_2.png"},
+        {CopyMode, ":/icons/methodbox_icons/calc_3.png"}
+    };
 
-    // Методы проверки словарей
+    // Функции проверки словарей
     void checkModeNames(const QComboBox* box);
     void checkModeNums(const QComboBox* box);
     void checkModeIconPaths();

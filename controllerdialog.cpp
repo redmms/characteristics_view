@@ -26,7 +26,7 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
                             .setEnable({})
                             .setDisable({})
                             .setEdit({ui->massEdit, ui->xEdit, ui->yEdit,ui->zEdit,
-                                   ui->angleEdit})
+                                      ui->angleEdit})
                             .setDefaultFocusPtr(ui->massEdit)
                             .setDefaultValue("0")
                             .setEventFilterPtr(this)
@@ -114,11 +114,13 @@ void ControllerDialog::on_applyButton_clicked()
     if (current_mode != Msp::CopyMode){
         for (auto it = input.begin(); it != input.end(); ++it) {
             QString val = it.value();
-            if (it.key() == ui->xEdit || it.key() == ui->yEdit ||
-                it.key() == ui->zEdit){
-                if (ui->coordBox->isChecked() && val.isEmpty()){
-                    empty_edits.push_back(it.key());  // Отдельная проверка координат
-                }
+            if ((it.key() == ui->xEdit ||
+                 it.key() == ui->yEdit ||
+                 it.key() == ui->zEdit) &&
+                ui->coordBox->isChecked() &&
+                val.isEmpty())
+            {
+                empty_edits.push_back(it.key());  // Отдельная проверка координат
             }
             else if (val.isEmpty()) {
                 empty_edits.push_back(it.key()); // Все остальные поля ввода
