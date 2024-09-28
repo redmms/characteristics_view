@@ -37,7 +37,7 @@ private:
              QObject* event_filter_);
 
 public:
-    // Дефолтные конструкторы
+    // Дефолтные конструкторы и операторы
     FillMode() = default;
     FillMode(const FillMode& other) = default;
     FillMode& operator=(const FillMode& other) = default;
@@ -45,11 +45,11 @@ public:
     FillMode& operator=(FillMode&& other) = default;
 
     // Публичные методы:
-    void turnOn();
-    void turnOff();
-    InputData getText();
-    void fillInDefaultValues();
-    void activateDefaultFocus();
+    void turnOn() const;
+    void turnOff() const;
+    InputData getText() const;
+    void fillInDefaultValues() const;
+    void activateDefaultFocus() const;
 };
 
 

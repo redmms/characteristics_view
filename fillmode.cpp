@@ -23,7 +23,7 @@ FillMode::FillMode( QList<QWidget*> hide_ptrs_,
     event_filter(event_filter_)
 {}
 
-void FillMode::turnOn()
+void FillMode::turnOn() const
 {
     // Включение режима:
     // Использовать только после turnOff() предыдущего режима
@@ -54,7 +54,7 @@ void FillMode::turnOn()
     }
 }
 
-void FillMode::turnOff()
+void FillMode::turnOff() const
 {
     // Отключение режима:
     for (auto uiptr : hide_ptrs){
@@ -78,7 +78,7 @@ void FillMode::turnOff()
     }
 }
 
-FillMode::InputData FillMode::getText()
+FillMode::InputData FillMode::getText() const
 {
     // Получаем текст из полей ввода, видимых в этом режиме.
     // Видимость не гарантируется и обеспечивается инициализацией
@@ -90,7 +90,7 @@ FillMode::InputData FillMode::getText()
     return line_edit_input;
 }
 
-void FillMode::fillInDefaultValues()
+void FillMode::fillInDefaultValues() const
 {
     // Заполняем поля ввода пользовательскими значениями по умолчанию:
     for (auto uiptr : edit_ptrs){
@@ -103,7 +103,7 @@ void FillMode::fillInDefaultValues()
     }
 }
 
-void FillMode::activateDefaultFocus()
+void FillMode::activateDefaultFocus() const
 {
     // Ставим курсор в поле по умолчанию:
     if (default_focus_ptr){
