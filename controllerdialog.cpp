@@ -10,7 +10,8 @@
 ControllerDialog::ControllerDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ControllerDialog),
-    part(nullptr),
+    part{},
+    part_item(nullptr),
     validator(new QRegularExpressionValidator(
         QRegularExpression("^[0-9]{0,7}$"), this)),  // До 7 цифр, как во float,
     // не позволяет вводить - и +
@@ -83,8 +84,8 @@ ControllerDialog::~ControllerDialog()
 PartItem* ControllerDialog::getInsertedLine(QObject *parent)
 {
     // Получаем введенные данные и передаем владение деталью:
-    part->setParent(parent);
-    return part;
+    part_item->setParent(parent);
+    return part_item;
 }
 
 bool ControllerDialog::eventFilter(QObject *object, QEvent *event)
@@ -160,55 +161,83 @@ void ControllerDialog::on_applyButton_clicked()
         input[ui->styleBox] = ui->styleBox->currentText();
 
         // Заполняем поля детали, которую потом передадим главному окну геттером:
-        part = new PartItem(this);
+        static auto methodValidator = [](QVariant field){
+            Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
+            return eval_method >= 0 && eval_method < Msp::NoneMode;
+        };
+        static auto styleValidator = [](QVariant field){
+            Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
+            return hatch_style >= 0 && hatch_style < Ssp::NoneStyle;
+        };
+        static auto methodIconizer = [](QVariant field){
+            Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
+            return QIcon(Msp::mode_icon_paths[eval_method]);
+        };
+        static auto styleIconizer = [](QVariant field){
+            Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
+            return QIcon(Ssp::style_icon_paths[hatch_style]);  // TODO использовать тоже рефлексию
+        };
+        static auto methodStringifier = [](QVariant field){
+            Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
+            return Msp::mode_names[eval_method];
+        };
+        static auto styleStringifier = [](QVariant field){
+            Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
+            return Ssp::style_names[hatch_style];
+        };
+
         setUpPart(input, part);
+        part_item = PartItemBuilder<Part>(part)
+            .setValidator("eval_method", methodValidator)
+            .setIconizer("eval_method", methodIconizer)
+            .setStringifier("eval_method", methodStringifier)
+            .setValidator("hatch_style", styleValidator)
+            .setIconizer("hatch_style", styleIconizer)
+            .setStringifier("hatch_style", styleStringifier)
+            .setParent(this)
+            .buildDynamic();
 
         // Успех:
         accept();
     }
 }
 
-void ControllerDialog::setUpPart(InputData input, PartItem *new_part)
+void ControllerDialog::setUpPart(InputData input, Part& new_part)
 {
     // Заполняем данные детали:
-    bool success = true;
     switch(current_mode){
     case Msp::MassMode:
-        success &= new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
-        success &= new_part->setMass(input.value(ui->massEdit, "!").toInt());
+        new_part.eval_method = Msp::mode_nums[input.value(ui->methodBox, "!")];
+        new_part.mass = input.value(ui->massEdit, "!").toInt();
         if (ui->coordBox->isChecked()){
             QString x = input.value(ui->xEdit, "!");
             QString y = input.value(ui->yEdit, "!");
             QString z = input.value(ui->zEdit, "!");
             QVector3D center{x.toFloat(), y.toFloat(), z.toFloat()};
-            success &= new_part->setCenter(center);
+            new_part.mass_center = center;
         }
-        success &= new_part->setMaterialName(input.value(ui->materialEdit, "!"));
-        success &= new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
-        success &= new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        new_part.material_short_name = input.value(ui->materialEdit, "!");
+        new_part.hatch_style = Ssp::style_nums[input.value(ui->styleBox, "!")];
+        new_part.hatch_angle = input.value(ui->angleEdit, "!").toInt();
         break;
     case Msp::DensityMode:
-        success &= new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
-        success &= new_part->setDensity(input.value(ui->densityEdit, "!").toInt());
-        success &= new_part->setMaterialName(input.value(ui->materialEdit, "!"));
-        success &= new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
-        success &= new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        new_part.eval_method = Msp::mode_nums[input.value(ui->methodBox, "!")];
+        new_part.density = input.value(ui->densityEdit, "!").toInt();
+        new_part.material_short_name = input.value(ui->materialEdit, "!");
+        new_part.hatch_style = Ssp::style_nums[input.value(ui->styleBox, "!")];
+        new_part.hatch_angle = input.value(ui->angleEdit, "!").toInt();
         break;
     case Msp::CopyMode:
-        success &= new_part->setMethod(Msp::mode_nums[input.value(ui->methodBox, "!")]);
-        success &= new_part->setMass(input.value(ui->massEdit, "!").toInt());
-        success &= new_part->setDensity(input.value(ui->densityEdit, "!").toInt());
-        success &= new_part->setMaterialName(input.value(ui->materialEdit, "!"));
-        success &= new_part->setMaterialStyle(Ssp::style_nums[input.value(ui->styleBox, "!")]);
-        success &= new_part->setMaterialAngle(input.value(ui->angleEdit, "!").toInt());
+        new_part.eval_method = Msp::mode_nums[input.value(ui->methodBox, "!")];
+        new_part.mass = input.value(ui->massEdit, "!").toInt();
+        new_part.density = input.value(ui->densityEdit, "!").toInt();
+        new_part.material_short_name = input.value(ui->materialEdit, "!");
+        new_part.hatch_style = Ssp::style_nums[input.value(ui->styleBox, "!")];
+        new_part.hatch_angle = input.value(ui->angleEdit, "!").toInt();
         break;
     default:
         qDebug() << "Unhandled fill mode passed as an argument";
         break;
-    }
-    if (!success){
-        qDebug() << "Some part members setup failed."
-                    "Don't forget to use a validator for user input";
     }
 }
 

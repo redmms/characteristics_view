@@ -10,17 +10,18 @@ class PartModel : public QAbstractTableModel
 private:
     // Приватные поля:
     QVector<PartItem*> parts;  // Данные о деталях, содержимое таблицы
-    const QVector<AbstractHelper*> helpers;  // Вспомогательные объекты
-    // для работы с полями PartItem по индексу
+    QVector<QString> headers;
+    int column_count;
 
     // Метод валидации индексов:
     bool isValidAccessRow(int row) const;
     bool isValidInsertRow(int row) const;
     bool isValidColumn(int column) const;
+    bool isValidItem(PartItem* item) const;
 
 public:
     // Конструктор:
-    explicit PartModel(int rows = 0, QObject *parent = nullptr);
+    explicit PartModel(int rows = 0, int columns = 0, QObject *parent = nullptr);
 
     // Публичные методы, rowCount, columnCount, data - обязательны для
     // представления:
@@ -36,5 +37,8 @@ public:
     PartItem* getPart(int row);
 
 private slots:
-    void partDeleted(QObject* object);
+    void partDeleted(QObject* object);   
+    // Слот для поиска индекса ячейки в рантайме и перенаправке сигнала
+    // представлению c нужной сигнатурой:
+    void findChangedIndex(int column);
 };

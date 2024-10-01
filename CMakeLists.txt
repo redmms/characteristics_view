@@ -6,7 +6,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
@@ -22,41 +22,28 @@ set(PROJECT_SOURCES
         controllerdialog.ui
         fillmode.h
         fillmode.cpp
+		part.h
         partitem.h
-        partitem.cpp
-        material.h
-        material.cpp
+		partitem.cpp
         partmodel.h
         partmodel.cpp
         modenum.h
         modenum.cpp
         stylenum.h
         stylenum.cpp
-        helpers/abstracthelper.h
-        helpers/abstracthelper.cpp
-        helpers/methodhelper.h
-        helpers/methodhelper.cpp
-        helpers/masshelper.h
-        helpers/masshelper.cpp
-        helpers/densityhelper.h
-        helpers/densityhelper.cpp
-        helpers/centerhelper.h
-        helpers/centerhelper.cpp
-        helpers/materialhelper.h
-        helpers/materialhelper.cpp
-        helpers/stylehelper.h
-        helpers/stylehelper.cpp
-        helpers/anglehelper.h
-        helpers/anglehelper.cpp
         media.qrc
         appicon.rc
 )
+include_directories(characterictics_view PUBLIC include)
+
+
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(characterictics_view
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
+
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET characterictics_view APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)

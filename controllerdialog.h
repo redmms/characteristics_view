@@ -4,10 +4,11 @@
 #include <QDialog>
 #include <QStringList>
 #include <QMap>
+#include "part.h"
+#include "partitem.h"
 
 namespace Ui { class ControllerDialog; }
 class QRegularExpressionValidator;
-class PartItem;
 class ControllerDialog : public QDialog
 {
     Q_OBJECT
@@ -15,13 +16,14 @@ class ControllerDialog : public QDialog
 private:
     // Приватные поля:
     Ui::ControllerDialog *ui;  // Указатель на UI
-    PartItem* part;  // Введенные данные о детали
+    Part part;  // Введенные данные о детали
+    PartItem* part_item;
     QRegularExpressionValidator* validator;  // Валидатор ввода
     Msp::ModeNum current_mode;  // Текущий режим ввода
     QMap<Msp::ModeNum, FillMode> modes;  // Описание каждого режима ввода
 
     // Методы для обработки данных о детали:
-    void setUpPart(InputData input, PartItem* new_part);
+    void setUpPart(InputData input, Part& new_part);
     void showEmptyWarningBox(QStringList empty_names);
 
 public:

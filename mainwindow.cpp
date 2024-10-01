@@ -13,13 +13,22 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    model(new PartModel(0, this)),
+    model(new PartModel(0, boost::pfr::tuple_size_v<Part>, this)),
     proxy(new QSortFilterProxyModel(this))
 {
     ui->setupUi(this);
 
     // Восстанавливаем геометрию окна:
     readSettings();
+
+    // Задаем заголовки таблице:
+    model->setHeaderData(0, "способ расчёта");
+    model->setHeaderData(1, "масса");
+    model->setHeaderData(2, "плотность");
+    model->setHeaderData(3, "центр масс");
+    model->setHeaderData(4, "материал");
+    model->setHeaderData(5, "стиль штриховки");
+    model->setHeaderData(6, "угол штриховки");
 
     // Устанавливаем прокси модель для сортировки.
     // Заголовки таблицы оставляем по умолчанию.

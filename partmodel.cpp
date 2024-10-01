@@ -1,44 +1,35 @@
 #include "partmodel.h"
-#include "helpers/anglehelper.h"
-#include "helpers/centerhelper.h"
-#include "helpers/densityhelper.h"
-#include "helpers/masshelper.h"
-#include "helpers/materialhelper.h"
-#include "helpers/methodhelper.h"
-#include "helpers/stylehelper.h"
 #include <QPointer>
 #include <QDebug>
 
-PartModel::PartModel(int rows, QObject *parent) :
+PartModel::PartModel(int rows, int columns, QObject *parent) :
     QAbstractTableModel(parent),
     parts{rows, {}},
-    helpers{
-        new MethodHelper(parts, helpers, "способ расчёта", this),
-        new MassHelper(parts, helpers, "масса", this),
-        new DensityHelper(parts, helpers, "плотность", this),
-        new CenterHelper(parts, helpers, "центр масс", this),
-        new MaterialHelper(parts, helpers, "материал", this),
-        new StyleHelper(parts, helpers, "стиль штриховки", this),
-        new AngleHelper(parts, helpers, "угол штриховки", this)
-    }
+    headers{columns, ""},
+    column_count(columns)
 {}
 
 // Проверка индекса строки:
 bool PartModel::isValidAccessRow(int row) const
 {
-    return row >= 0 && row < parts.size();
+    return row >= 0 && row < rowCount();
 }
 
 // Проверка индекса строки:
 bool PartModel::isValidInsertRow(int row) const
 {
-    return row >= 0 && row <= parts.size();
+    return row >= 0 && row <= rowCount();
 }
 
 // Проверка индекса столбца:
 bool PartModel::isValidColumn(int column) const
 {
-    return column >= 0 && column < helpers.size();
+    return column >= 0 && column < columnCount();
+}
+
+bool PartModel::isValidItem(PartItem *item) const
+{
+    return item && item->getStructureSize() == columnCount();
 }
 
 // Количество строк:
@@ -52,7 +43,7 @@ int PartModel::rowCount(const QModelIndex& parent) const
 int PartModel::columnCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
-    return helpers.size();
+    return column_count;
 }
 
 // Метод для отображения ячеек в представлении
@@ -60,20 +51,21 @@ QVariant PartModel::data(const QModelIndex &index, int role) const
 { 
     QVariant ret = {};
     if(index.isValid() && isValidAccessRow(index.row()) &&
-        isValidColumn(index.column())){  // Проверка индекса:
+        isValidColumn(index.column())){  // Проверка индекса
+        // Инициализация локальных переменных:
         int i = index.row();
         int j = index.column();
 
-        // Свой помощник для каждого столбца, своя деталь для каждой строки:
+        // Обработка ролей:
         switch (role) {
         case Qt::DisplayRole:
-            ret = helpers[j]->getString(parts[i]);
+            ret = parts[i]->getString(j);
             break;
         case Qt::ToolTipRole:
-            ret = helpers[j]->getHeader();
+            ret = headers[j];
             break;
         case Qt::DecorationRole:
-            ret = helpers[j]->getIcon(parts[i]);
+            ret = parts[i]->getIcon(j);
             break;
         default:
             ret = {};
@@ -84,21 +76,16 @@ QVariant PartModel::data(const QModelIndex &index, int role) const
 }
 
 // Метод вставки строки
-bool PartModel::insertRow(int row, PartItem *part)
+bool PartModel::insertRow(int row, PartItem* part)
 {
     bool success = false;
-    if (isValidInsertRow(row) && part){  // Проверяем аргументы:
+    if (isValidInsertRow(row) && isValidItem(part)){  // Проверяем аргументы:
         // Сразу же забираем владение объектом:
         part->setParent(this);
 
-        // Подключаем сигналы изменения полей детали, они же ячейки:
-        for (auto helper : helpers){
-            helper->connectPartSignal(part);
-            connect(helper, &AbstractHelper::dataChanged,
-                    this, &QAbstractItemModel::dataChanged);
-        }
-
-        // Подключаем сигнал удаления детали:
+        // Подключаем сигналы изменения и удаления полей детали, они же ячейки:
+        connect(part, &PartItem::changed,
+                this, &PartModel::findChangedIndex);
         connect(part, &PartItem::destroyed, this, &PartModel::partDeleted);
 
         // Вставлем строки-детали и уведомляем представление
@@ -112,12 +99,12 @@ bool PartModel::insertRow(int row, PartItem *part)
 }
 
 // Метод для удобства добавления в конец. Все проверки в insertRow
-void PartModel::appendRow(PartItem *part)
+void PartModel::appendRow(PartItem* part)
 {
     int row = parts.size();
     bool success = insertRow(row, part);
     if (!success){
-        qDebug() << "appending failed";
+        qDebug() << "Appending failed";
     }
 }
 
@@ -146,7 +133,7 @@ bool PartModel::setHeaderData(int column, const QVariant &value)
     bool success = false;
     if (isValidColumn(column)){  // Проверяем аргументы
         // Меняем заголовки:
-        helpers[column]->setHeader(value.toString());
+        headers[column] = value.toString();
         emit headerDataChanged(Qt::Horizontal, column, column);
     }
     return success;
@@ -162,7 +149,7 @@ QVariant PartModel::headerData(int column, Qt::Orientation orientation,
         role == Qt::DisplayRole)
     {
         // Получаем заголовок
-        ret = helpers[column]->getHeader();
+        ret = headers[column];
     }
     return ret;
 }
@@ -186,4 +173,25 @@ void PartModel::partDeleted(QObject *object)
     if (!success){
         qDebug() << "Couldn't remove a row in partDeleted slot";
     }
+}
+
+void PartModel::findChangedIndex(int column)
+{
+    // Определяем изменившуюся ячейку:
+    PartItem* part = qobject_cast<PartItem*>(sender());
+    if (!part){
+        qDebug() << "qobject_cast<PartItem*>(sender()) failed";
+    }
+
+    // Находим индекс ячейки:
+    // Такой подход не самый быстродейственный, но зато не требует лишнего
+    // места и не зависит от добавления/удаления строк в таблице
+    int i = parts.indexOf(part);
+    int j = column;
+
+    // Отправляем сигнал с нужной сигнатурой представлению:
+    QModelIndex idx = (qobject_cast<QAbstractItemModel*>(parent()))->
+                      index(i, j);
+    QVector<int> roles{static_cast<int>(Qt::DisplayRole)};
+    emit dataChanged(idx, idx, roles);
 }
