@@ -175,7 +175,8 @@ void ControllerDialog::on_applyButton_clicked()
         };
         static auto styleIconizer = [](QVariant field){
             Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
-            return QIcon(Ssp::style_icon_paths[hatch_style]);  // TODO использовать тоже рефлексию
+            return QIcon(QPixmap(Ssp::style_icon_paths[hatch_style]).copy(0,0,75,75).
+                 scaled(30, 30));  // TODO использовать тоже рефлексию
         };
         static auto methodStringifier = [](QVariant field){
             Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());

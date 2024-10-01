@@ -86,10 +86,11 @@ private:
     std::function<QString(QVariant)> defaultStringifier = [&](QVariant field){
         return field.toString();
         };
-//    std::function<QString(QVariant)> defaultQVector3DStringifier = [&](QVariant field){
-//        QVector3D vec = qvariant_cast(field);
-//        return field.toString();
-//        };
+    std::function<QString(QVariant)> defaultQVector3DStringifier = [&](QVariant field){
+        QVector3D vec = field.value<QVector3D>();
+        QString ret = QString("%0, %1, %2").arg(vec.x()).arg(vec.y()).arg(vec.z());
+        return ret;
+        };
 
     std::function<QIcon(QVariant)> defaultIconizer = [&](QVariant field){
         return QIcon();
@@ -149,7 +150,7 @@ public:
                 break;
             case QMetaType::QVector3D:
                 validators[i] = defaultQVector3DValidator;
-                stringifiers[i] = defaultStringifier;  // TODO
+                stringifiers[i] = defaultQVector3DStringifier;
                 iconizers[i] = defaultQIconIconizer;
                 break;
             }
