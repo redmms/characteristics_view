@@ -160,43 +160,41 @@ void ControllerDialog::on_applyButton_clicked()
         input[ui->methodBox] = ui->methodBox->currentText();
         input[ui->styleBox] = ui->styleBox->currentText();
 
-        // Заполняем поля детали, которую потом передадим главному окну геттером:
-        static auto methodValidator = [](QVariant field){
-            Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
-            return eval_method >= 0 && eval_method < Msp::NoneMode;
-        };
-        static auto styleValidator = [](QVariant field){
-            Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
-            return hatch_style >= 0 && hatch_style < Ssp::NoneStyle;
-        };
-        static auto methodIconizer = [](QVariant field){
-            Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
-            return QIcon(Msp::mode_icon_paths[eval_method]);
-        };
-        static auto styleIconizer = [](QVariant field){
-            Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
-            return QIcon(QPixmap(Ssp::style_icon_paths[hatch_style]).copy(0,0,75,75).
-                 scaled(30, 30));  // TODO использовать тоже рефлексию
-        };
-        static auto methodStringifier = [](QVariant field){
-            Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
-            return Msp::mode_names[eval_method];
-        };
-        static auto styleStringifier = [](QVariant field){
-            Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
-            return Ssp::style_names[hatch_style];
-        };
+    PartItem::Validator methodValidator = [](QVariant field){
+        Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
+        return eval_method >= 0 && eval_method < Msp::NoneMode;
+    };
+    PartItem::Validator styleValidator = [](QVariant field){
+        Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
+        return hatch_style >= 0 && hatch_style < Ssp::NoneStyle;
+    };
+    PartItem::Iconizer methodIconizer = [](QVariant field){
+        Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
+        return QIcon(Msp::mode_icon_paths[eval_method]);
+    };
+    PartItem::Iconizer styleIconizer = [](QVariant field){
+        Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
+        return QIcon(QPixmap(Ssp::style_icon_paths[hatch_style]).copy(0,0,75,75).
+             scaled(30, 30));  // TODO использовать тоже рефлексию
+    };
+    PartItem::Stringer methodStringer = [](QVariant field){
+        Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
+        return Msp::mode_names[eval_method];
+    };
+    PartItem::Stringer styleStringer = [](QVariant field){
+        Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
+        return Ssp::style_names[hatch_style];
+    };
 
+        // Заполняем поля детали, которую потом передадим главному окну геттером:
         setUpPart(input, part);
-        part_item = PartItemBuilder<Part>(part)
-            .setValidator("eval_method", methodValidator)
-            .setIconizer("eval_method", methodIconizer)
-            .setStringifier("eval_method", methodStringifier)
-            .setValidator("hatch_style", styleValidator)
-            .setIconizer("hatch_style", styleIconizer)
-            .setStringifier("hatch_style", styleStringifier)
-            .setParent(this)
-            .buildDynamic();
+        part_item = PartItemBuilder(part, this).buildDynamic();
+        part_item->setFunction<bool>("validators", "eval_method", methodValidator);
+        part_item->setFunction<QIcon>("iconizers", "eval_method", methodIconizer);
+        part_item->setFunction<QString>("stringers", "eval_method", methodStringer);
+        part_item->setFunction<bool>("validators", "hatch_style", styleValidator);
+        part_item->setFunction<QIcon>("iconizers", "hatch_style", styleIconizer);
+        part_item->setFunction<QString>("stringers", "hatch_style", styleStringer);
 
         // Успех:
         accept();

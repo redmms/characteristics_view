@@ -22,6 +22,8 @@ private:
     Msp::ModeNum current_mode;  // Текущий режим ввода
     QMap<Msp::ModeNum, FillMode> modes;  // Описание каждого режима ввода
 
+
+
     // Методы для обработки данных о детали:
     void setUpPart(InputData input, Part& new_part);
     void showEmptyWarningBox(QStringList empty_names);

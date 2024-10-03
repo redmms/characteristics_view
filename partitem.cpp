@@ -12,15 +12,44 @@ bool PartItem::isValidField(int idx, QVariant field){
     return ret;
 }
 
-PartItem::PartItem(int struct_size_, QVector<QVariant> fields_, QVector<QVariant> defaults_, QVector<std::function<bool (QVariant)> > validators_, QVector<std::function<QString (QVariant)> > stringifiers_, QVector<std::function<QIcon (QVariant)> > iconizers_, QObject *parent) :
+PartItem::PartItem(int struct_size_,
+                    QVector<QVariant> fields_,
+                    QMap<QString, int> field_names_,
+                    QObject *parent) :
     QObject(parent),
     struct_size(struct_size_),
     fields(fields_),
-    defaults(defaults_),
-    validators(validators_),
-    stringifiers(stringifiers_),
-    iconizers(iconizers_)
-{}
+    field_names(field_names_)
+{
+    validators.resize(struct_size);
+    stringers.resize(struct_size);
+    iconizers.resize(struct_size);
+    for (int i = 0; i < struct_size; ++i){
+        switch(static_cast<QMetaType::Type>(fields[i].type())){
+        case QMetaType::QString:
+            validators[i] = defaultQStringValidator;
+            stringers[i] = defaultStringer;
+            iconizers[i] = defaultIconizer;
+            break;
+        case QMetaType::Int:
+        case QMetaType::Float:
+            validators[i] = defaultIntValidator;
+            stringers[i] = defaultStringer;
+            iconizers[i] = defaultIconizer;
+            break;
+        case QMetaType::QIcon:
+            validators[i] = defaultValidator;
+            stringers[i] = defaultStringer;
+            iconizers[i] = defaultQIconIconizer;
+            break;
+        case QMetaType::QVector3D:
+            validators[i] = defaultQVector3DValidator;
+            stringers[i] = defaultQVector3DStringer;
+            iconizers[i] = defaultQIconIconizer;
+            break;
+        }
+    }
+}
 
 bool PartItem::isValid(int idx){
     auto ret = false;
@@ -46,7 +75,7 @@ QString PartItem::getString(int idx){
         // Возможна реализация другого способа отображения невалидных значений.
         // Для исходного ТЗ определение способа отображения невалидных значений
         // с помощью параметра не требовалось.
-        ret = stringifiers[idx](fields[idx]);
+        ret = stringers[idx](fields[idx]);
     }
     return ret;
 }
@@ -72,8 +101,50 @@ bool PartItem::Set(int idx, QVariant value){
     return success;
 }
 
-void PartItem::setDefaults(){
+void PartItem::fillDefaults(){
     fields = defaults;  // TODO: добавить проверку в билдере, что типы их и размер совпадают внутри
+}
+
+bool PartItem::setDefaults(QVector<QVariant> defaults_){
+    bool success = false;
+    if (defaults_.size() == struct_size){
+        for(int i = 0; i < struct_size; ++i){
+            if (fields[i].type() == defaults_[i].type()){
+                defaults[i] = defaults_[i];
+            }
+            else {
+                QString message = QString(
+                                      "Wrong arguments. "
+                                      "Inner QVariant types should be the same. "
+                                      "Field QVariant::type: "
+                                      "%0"
+                                      "Given default QVariant::type: "
+                                      "%1"
+                                      )
+                                      .arg(fields[i].type())
+                                      .arg(defaults_[i].type());
+                qCritical() << message;
+            }
+        }
+        success = true;
+    }
+    else{
+        qCritical() << "Arguments of wrong size";
+    }
+    return success;
+}
+
+bool PartItem::setDefault(QString field_name, QVariant default_){
+    bool success = false;
+    int idx = field_names.value(field_name, -1);
+    if (idx != -1){
+        defaults[idx] = default_;
+        success = true;
+    }
+    else{
+        qCritical() << "Wrong field name";
+    }
+    return success;
 }
 
 int PartItem::getStructureSize(){
