@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "partmodel.h"
+#include "structmodel.h"
 #include "controllerdialog.h"
 #include <QList>
 #include <QSettings>
@@ -73,7 +73,7 @@ void MainWindow::on_addLineButton_clicked()
     ControllerDialog controller(this);
     if(controller.exec()){
         // Сохраняем данные из контроллера в виде PartItem:
-        PartItem* new_row = controller.getInsertedLine(this);
+        StructItem* new_row = controller.getInsertedLine(this);
 
         // Вставляем строку-деталь и передам владение модели
         model->appendRow(new_row);
@@ -84,8 +84,9 @@ void MainWindow::on_addLineButton_clicked()
 //        new_row->setMaterialName("Changed Excluded part Bla Bla Bla");
 //        new_row->setCenter({99999, 126789, 21234});
 
-//        PartItem* item = model->getPart(0);
-//        delete item;
+        StructItem* item = model->getPart(0);
+        item->Set(0, QVariant(2));
+        //delete item;
     }
 }
 

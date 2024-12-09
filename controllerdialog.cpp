@@ -1,6 +1,8 @@
 #include "controllerdialog.h"
 #include "ui_controllerdialog.h"
-#include "partitem.h"
+#include "structitem.h"
+#include "fillmodebuilder.h"
+#include "structitembuilder.hpp"
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
 #include <QMessageBox>
@@ -21,38 +23,56 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
     ui->setupUi(this);
 
     // Описываем режимы ввода:
-    modes = {{Msp::MassMode, {FillModeBuilder()
-                            .setHide({ui->densityFrame})
-                            .setShow({ui->coordBox, ui->massFrame})
-                            .setEnable({})
-                            .setDisable({})
-                            .setEdit({ui->massEdit, ui->xEdit, ui->yEdit,ui->zEdit,
-                                      ui->angleEdit})
-                            .setDefaultFocusPtr(ui->massEdit)
-                            .setDefaultValue("0")
-                            .setEventFilterPtr(this)
-                            .build()}},
-            {Msp::DensityMode, {FillModeBuilder()
-                            .setHide({ui->coordBox, ui->massFrame})
-                            .setShow({ui->densityFrame})
-                            .setEnable({})
-                            .setDisable({})
-                            .setEdit({ui->densityEdit, ui->angleEdit})
-                            .setDefaultFocusPtr(ui->densityEdit)
-                            .setDefaultValue("0")
-                            .setEventFilterPtr(this)
-                            .build()}},
-            {Msp::CopyMode, {FillModeBuilder()
-                            .setHide({ui->coordBox})
-                            .setShow({ui->massFrame, ui->densityFrame})
-                            .setEnable({})
-                            .setDisable({ui->massEdit, ui->densityEdit, ui->styleBox,
-                                         ui->angleEdit, ui->materialEdit})
-                            .setEdit({ui->massEdit, ui->densityEdit, ui->angleEdit})
-                            .setDefaultFocusPtr(nullptr)
-                            .setDefaultValue("0")
-                            .setEventFilterPtr(this)
-                            .build()}}};
+    modes =
+    {
+        {
+            Msp::MassMode,
+            {
+                FillModeBuilder()
+                .setHide({ui->densityFrame})
+                .setShow({ui->coordBox, ui->massFrame})
+                .setEnable({})
+                .setDisable({})
+                .setEdit({ui->massEdit, ui->xEdit, ui->yEdit,ui->zEdit,
+                          ui->angleEdit})
+                .setDefaultFocusPtr(ui->massEdit)
+                .setDefaultValue("0")
+                .setEventFilterPtr(this)
+                .build()
+            }
+        },
+        {
+            Msp::DensityMode,
+            {
+                FillModeBuilder()
+                .setHide({ui->coordBox, ui->massFrame})
+                .setShow({ui->densityFrame})
+                .setEnable({})
+                .setDisable({})
+                .setEdit({ui->densityEdit, ui->angleEdit})
+                .setDefaultFocusPtr(ui->densityEdit)
+                .setDefaultValue("0")
+                .setEventFilterPtr(this)
+                .build()
+            }
+        },
+        {
+            Msp::CopyMode,
+            {
+                FillModeBuilder()
+                .setHide({ui->coordBox})
+                .setShow({ui->massFrame, ui->densityFrame})
+                .setEnable({})
+                .setDisable({ui->massEdit, ui->densityEdit, ui->styleBox,
+                             ui->angleEdit, ui->materialEdit})
+                .setEdit({ui->massEdit, ui->densityEdit, ui->angleEdit})
+                .setDefaultFocusPtr(nullptr)
+                .setDefaultValue("0")
+                .setEventFilterPtr(this)
+                .build()
+            }
+        }
+    };
 
     // Проверяем словари для работы с enum на соответствие UI:
     Msp::checkModeNames(ui->methodBox);
@@ -65,7 +85,8 @@ ControllerDialog::ControllerDialog(QWidget *parent) :
 
     // Устанавливаем валидатор:
     for (auto uiptr : {ui->massEdit, ui->xEdit, ui->yEdit, ui->zEdit,
-            ui->angleEdit, ui->densityEdit}){
+            ui->angleEdit, ui->densityEdit})
+    {
         uiptr->setValidator(validator);
     }
 
@@ -81,7 +102,7 @@ ControllerDialog::~ControllerDialog()
     delete ui;
 }
 
-PartItem* ControllerDialog::getInsertedLine(QObject *parent)
+StructItem* ControllerDialog::getInsertedLine(QObject *parent)
 {
     // Получаем введенные данные и передаем владение деталью:
     part_item->setParent(parent);
@@ -160,41 +181,44 @@ void ControllerDialog::on_applyButton_clicked()
         input[ui->methodBox] = ui->methodBox->currentText();
         input[ui->styleBox] = ui->styleBox->currentText();
 
-    PartItem::Validator methodValidator = [](QVariant field){
-        Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
-        return eval_method >= 0 && eval_method < Msp::NoneMode;
-    };
-    PartItem::Validator styleValidator = [](QVariant field){
-        Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
-        return hatch_style >= 0 && hatch_style < Ssp::NoneStyle;
-    };
-    PartItem::Iconizer methodIconizer = [](QVariant field){
-        Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
-        return QIcon(Msp::mode_icon_paths[eval_method]);
-    };
-    PartItem::Iconizer styleIconizer = [](QVariant field){
-        Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
-        return QIcon(QPixmap(Ssp::style_icon_paths[hatch_style]).copy(0,0,75,75).
-             scaled(30, 30));  // TODO использовать тоже рефлексию
-    };
-    PartItem::Stringer methodStringer = [](QVariant field){
-        Msp::ModeNum eval_method = static_cast<Msp::ModeNum>(field.toInt());
-        return Msp::mode_names[eval_method];
-    };
-    PartItem::Stringer styleStringer = [](QVariant field){
-        Ssp::HatchStyleNum hatch_style = static_cast<Ssp::HatchStyleNum>(field.toInt());
-        return Ssp::style_names[hatch_style];
-    };
+        using namespace Msp;
+        using namespace Ssp;
+        static StructItem::Validator methodValidator = [](QVariant field){
+            ModeNum eval_method = static_cast<ModeNum>(field.toInt());
+            return eval_method >= 0 && eval_method < NoneMode;
+        };
+        static StructItem::Validator styleValidator = [](QVariant field){
+            HatchStyleNum hatch_style = static_cast<HatchStyleNum>(field.toInt());
+            return hatch_style >= 0 && hatch_style < NoneStyle;
+        };
+        static StructItem::Iconizer methodIconizer = [](QVariant field){
+            ModeNum eval_method = static_cast<ModeNum>(field.toInt());
+            return QIcon(mode_icon_paths[eval_method]);
+        };
+        static StructItem::Iconizer styleIconizer = [](QVariant field){
+            HatchStyleNum hatch_style = static_cast<HatchStyleNum>(field.toInt());
+            return QIcon(QPixmap(style_icon_paths[hatch_style])
+                .copy(0,0,75,75).scaled(30, 30));
+                // TODO использовать тоже рефлексию
+        };
+        static StructItem::Stringer methodStringer = [](QVariant field){
+            ModeNum eval_method = static_cast<ModeNum>(field.toInt());
+            return mode_names[eval_method];
+        };
+        static StructItem::Stringer styleStringer = [](QVariant field){
+            HatchStyleNum hatch_style = static_cast<HatchStyleNum>(field.toInt());
+            return style_names[hatch_style];
+        };
 
         // Заполняем поля детали, которую потом передадим главному окну геттером:
         setUpPart(input, part);
-        part_item = PartItemBuilder(part, this).buildDynamic();
-        part_item->setFunction<bool>("validators", "eval_method", methodValidator);
-        part_item->setFunction<QIcon>("iconizers", "eval_method", methodIconizer);
-        part_item->setFunction<QString>("stringers", "eval_method", methodStringer);
-        part_item->setFunction<bool>("validators", "hatch_style", styleValidator);
-        part_item->setFunction<QIcon>("iconizers", "hatch_style", styleIconizer);
-        part_item->setFunction<QString>("stringers", "hatch_style", styleStringer);
+        part_item = StructItemBuilder(part, this).buildDynamic();
+        part_item->setFunction("validators", "eval_method", methodValidator);
+        part_item->setFunction("iconizers", "eval_method", methodIconizer);
+        part_item->setFunction("stringers", "eval_method", methodStringer);
+        part_item->setFunction("validators", "hatch_style", styleValidator);
+        part_item->setFunction("iconizers", "hatch_style", styleIconizer);
+        part_item->setFunction("stringers", "hatch_style", styleStringer);
 
         // Успех:
         accept();

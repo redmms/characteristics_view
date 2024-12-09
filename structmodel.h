@@ -1,5 +1,5 @@
 #pragma once
-#include "partitem.h"
+#include "structitem.h"
 #include <QAbstractTableModel>
 #include <QVector>
 
@@ -9,7 +9,7 @@ class PartModel : public QAbstractTableModel
     Q_OBJECT
 private:
     // Приватные поля:
-    QVector<PartItem*> parts;  // Данные о деталях, содержимое таблицы
+    QVector<StructItem*> parts;  // Данные о деталях, содержимое таблицы
     QVector<QString> headers;
     int column_count;
 
@@ -17,7 +17,7 @@ private:
     bool isValidAccessRow(int row) const;
     bool isValidInsertRow(int row) const;
     bool isValidColumn(int column) const;
-    bool isValidItem(PartItem* item) const;
+    bool isValidItem(StructItem* item) const;
 
 public:
     // Конструктор:
@@ -28,13 +28,13 @@ public:
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
-    bool insertRow(int row, PartItem* part);
-    void appendRow(PartItem* part);  // Метод для удобства
+    bool insertRow(int row, StructItem* part);
+    void appendRow(StructItem* part);  // Метод для удобства
     bool removeRow(int row);
     bool setHeaderData(int column, const QVariant &value);
     QVariant headerData(int column, Qt::Orientation orientation,
                         int role) const override;
-    PartItem* getPart(int row);
+    StructItem* getPart(int row);
 
 private slots:
     void partDeleted(QObject* object);   

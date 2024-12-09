@@ -1,4 +1,4 @@
-#include "partmodel.h"
+#include "structmodel.h"
 #include <QPointer>
 #include <QDebug>
 
@@ -27,7 +27,7 @@ bool PartModel::isValidColumn(int column) const
     return column >= 0 && column < columnCount();
 }
 
-bool PartModel::isValidItem(PartItem *item) const
+bool PartModel::isValidItem(StructItem *item) const
 {
     return item && item->getStructureSize() == columnCount();
 }
@@ -76,7 +76,7 @@ QVariant PartModel::data(const QModelIndex &index, int role) const
 }
 
 // Метод вставки строки
-bool PartModel::insertRow(int row, PartItem* part)
+bool PartModel::insertRow(int row, StructItem* part)
 {
     bool success = false;
     if (isValidInsertRow(row) && isValidItem(part)){  // Проверяем аргументы:
@@ -84,9 +84,9 @@ bool PartModel::insertRow(int row, PartItem* part)
         part->setParent(this);
 
         // Подключаем сигналы изменения и удаления полей детали, они же ячейки:
-        connect(part, &PartItem::changed,
+        connect(part, &StructItem::changed,
                 this, &PartModel::findChangedIndex);
-        connect(part, &PartItem::destroyed, this, &PartModel::partDeleted);
+        connect(part, &StructItem::destroyed, this, &PartModel::partDeleted);
 
         // Вставлем строки-детали и уведомляем представление
         beginInsertRows(QModelIndex(), row, row); // "Уведомление"
@@ -99,7 +99,7 @@ bool PartModel::insertRow(int row, PartItem* part)
 }
 
 // Метод для удобства добавления в конец. Все проверки в insertRow
-void PartModel::appendRow(PartItem* part)
+void PartModel::appendRow(StructItem* part)
 {
     int row = parts.size();
     bool success = insertRow(row, part);
@@ -115,9 +115,9 @@ bool PartModel::removeRow(int row)
     if (isValidAccessRow(row)){ // Проверяем аргументы:
         // Удаляем строки-детали и уведомляем представление
         beginRemoveRows(QModelIndex(), row, row);
-        QPointer<PartItem> to_delete = parts[row];
+        QPointer<StructItem> to_delete = parts[row];
         if (to_delete){
-            disconnect(to_delete, &PartItem::destroyed, this, &PartModel::partDeleted);
+            disconnect(to_delete, &StructItem::destroyed, this, &PartModel::partDeleted);
             to_delete->deleteLater();
         }
         parts.remove(row);
@@ -155,9 +155,9 @@ QVariant PartModel::headerData(int column, Qt::Orientation orientation,
 }
 
 // Получение указателя на деталь, модель позволяет работать с деталями по указателю
-PartItem* PartModel::getPart(int row)
+StructItem* PartModel::getPart(int row)
 {
-    PartItem* ret = nullptr;
+    StructItem* ret = nullptr;
     if (isValidAccessRow(row)){
         ret = parts[row];
     }
@@ -167,7 +167,7 @@ PartItem* PartModel::getPart(int row)
 // Очищение строки из-под удаленной по указателю детали:
 void PartModel::partDeleted(QObject *object)
 {
-    bool success = removeRow(parts.indexOf((PartItem*)object));  // Здесь нам не важна валидность
+    bool success = removeRow(parts.indexOf((StructItem*)object));  // Здесь нам не важна валидность
     // указателя, поэтому используем C-style каст, указатель дополнительно
     // проверяется в removeRow();
     if (!success){
@@ -178,7 +178,7 @@ void PartModel::partDeleted(QObject *object)
 void PartModel::findChangedIndex(int column)
 {
     // Определяем изменившуюся ячейку:
-    PartItem* part = qobject_cast<PartItem*>(sender());
+    StructItem* part = qobject_cast<StructItem*>(sender());
     if (!part){
         qDebug() << "qobject_cast<PartItem*>(sender()) failed";
     }

@@ -4,8 +4,8 @@
 #include <QDialog>
 #include <QStringList>
 #include <QMap>
-#include "part.h"
-#include "partitem.h"
+#include "part.hpp"
+#include "structitem.h"
 
 namespace Ui { class ControllerDialog; }
 class QRegularExpressionValidator;
@@ -17,7 +17,7 @@ private:
     // Приватные поля:
     Ui::ControllerDialog *ui;  // Указатель на UI
     Part part;  // Введенные данные о детали
-    PartItem* part_item;
+    StructItem* part_item;
     QRegularExpressionValidator* validator;  // Валидатор ввода
     Msp::ModeNum current_mode;  // Текущий режим ввода
     QMap<Msp::ModeNum, FillMode> modes;  // Описание каждого режима ввода
@@ -34,7 +34,7 @@ public:
     ~ControllerDialog();
 
     // Публичные методы:
-    PartItem* getInsertedLine(QObject* parent);
+    StructItem* getInsertedLine(QObject* parent);
     bool eventFilter(QObject *object, QEvent *event);
 
 private slots:

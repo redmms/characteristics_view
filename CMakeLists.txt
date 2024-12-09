@@ -22,11 +22,14 @@ set(PROJECT_SOURCES
         controllerdialog.ui
         fillmode.h
         fillmode.cpp
-		part.h
-        partitem.h
-		partitem.cpp
-        partmodel.h
-        partmodel.cpp
+		fillmodebuilder.h
+		fillmodebuilder.cpp
+		part.hpp
+		structitem.h
+		structitem.cpp
+		structitembuilder.hpp
+		structmodel.h
+		structmodel.cpp
         modenum.h
         modenum.cpp
         stylenum.h

@@ -1,10 +1,10 @@
-#include "partitem.h"
+#include "structitem.h"
 
-bool PartItem::isValidIndex(int idx){
+bool StructItem::isValidIndex(int idx){
     return idx >= 0 && idx < struct_size;
 }
 
-bool PartItem::isValidField(int idx, QVariant field){
+bool StructItem::isValidField(int idx, QVariant field){
     bool ret = false;
     if (isValidIndex(idx)){
         ret = validators[idx](field);
@@ -12,7 +12,7 @@ bool PartItem::isValidField(int idx, QVariant field){
     return ret;
 }
 
-PartItem::PartItem(int struct_size_,
+StructItem::StructItem(int struct_size_,
                     QVector<QVariant> fields_,
                     QMap<QString, int> field_names_,
                     QObject *parent) :
@@ -21,9 +21,6 @@ PartItem::PartItem(int struct_size_,
     fields(fields_),
     field_names(field_names_)
 {
-    validators.resize(struct_size);
-    stringers.resize(struct_size);
-    iconizers.resize(struct_size);
     for (int i = 0; i < struct_size; ++i){
         switch(static_cast<QMetaType::Type>(fields[i].type())){
         case QMetaType::QString:
@@ -32,9 +29,18 @@ PartItem::PartItem(int struct_size_,
             iconizers[i] = defaultIconizer;
             break;
         case QMetaType::Int:
-        case QMetaType::Float:
             validators[i] = defaultIntValidator;
             stringers[i] = defaultStringer;
+            iconizers[i] = defaultIconizer;
+            break;
+        case QMetaType::Float:
+            validators[i] = defaultIntValidator;
+            stringers[i] = defaultFloatStringer;
+            iconizers[i] = defaultIconizer;
+            break;
+        case QMetaType::Double:
+            validators[i] = defaultIntValidator;
+            stringers[i] = defaultDoubleStringer;
             iconizers[i] = defaultIconizer;
             break;
         case QMetaType::QIcon:
@@ -47,11 +53,16 @@ PartItem::PartItem(int struct_size_,
             stringers[i] = defaultQVector3DStringer;
             iconizers[i] = defaultQIconIconizer;
             break;
+        default:
+            validators[i] = defaultValidator;
+            stringers[i] = defaultStringer;
+            iconizers[i] = defaultIconizer;
+            break;
         }
     }
 }
 
-bool PartItem::isValid(int idx){
+bool StructItem::isValid(int idx){
     auto ret = false;
     if (isValidIndex(idx)){
         ret = isValidField(idx, fields[idx]);
@@ -59,7 +70,7 @@ bool PartItem::isValid(int idx){
     return ret;
 }
 
-QVariant PartItem::Get(int idx){
+QVariant StructItem::Get(int idx){
     QVariant ret = {};
     if (isValidIndex(idx)){
         ret = fields[idx];
@@ -67,7 +78,7 @@ QVariant PartItem::Get(int idx){
     return ret;
 }
 
-QString PartItem::getString(int idx){
+QString StructItem::getString(int idx){
     QString ret = {};
     if (isValidIndex(idx) && isValid(idx)){
         // Если невалидное поле - возможно, стоит значение по умолчанию, оставляем ячейку
@@ -80,7 +91,7 @@ QString PartItem::getString(int idx){
     return ret;
 }
 
-QIcon PartItem::getIcon(int idx){
+QIcon StructItem::getIcon(int idx){
     QIcon ret = {};
     if (isValidIndex(idx)){
         ret = iconizers[idx](fields[idx]);
@@ -88,7 +99,7 @@ QIcon PartItem::getIcon(int idx){
     return ret;
 }
 
-bool PartItem::Set(int idx, QVariant value){
+bool StructItem::Set(int idx, QVariant value){
     bool success = false;
     if (isValidIndex(idx) &&
         isValidField(idx, value) &&
@@ -101,11 +112,21 @@ bool PartItem::Set(int idx, QVariant value){
     return success;
 }
 
-void PartItem::fillDefaults(){
+void StructItem::fillDefaults(){
     fields = defaults;  // TODO: добавить проверку в билдере, что типы их и размер совпадают внутри
 }
 
-bool PartItem::setDefaults(QVector<QVariant> defaults_){
+bool StructItem::isExistingContainer(QString container_name, const type_info &return_type){
+    bool is_error =  container_name == "validators" &&
+                        return_type != typeid(bool) ||
+                    container_name == "stringers" &&
+                        return_type != typeid(QString) ||
+                    container_name == "iconizers" &&
+                        return_type != typeid(QIcon);
+    return !is_error;
+}
+
+bool StructItem::setDefaults(QVector<QVariant> defaults_){
     bool success = false;
     if (defaults_.size() == struct_size){
         for(int i = 0; i < struct_size; ++i){
@@ -126,6 +147,9 @@ bool PartItem::setDefaults(QVector<QVariant> defaults_){
                 qCritical() << message;
             }
         }
+        for (int i = 0; i < struct_size; ++i){
+            emit changed(i);
+        }
         success = true;
     }
     else{
@@ -134,11 +158,12 @@ bool PartItem::setDefaults(QVector<QVariant> defaults_){
     return success;
 }
 
-bool PartItem::setDefault(QString field_name, QVariant default_){
+bool StructItem::setDefault(QString field_name, QVariant default_){
     bool success = false;
     int idx = field_names.value(field_name, -1);
     if (idx != -1){
         defaults[idx] = default_;
+        emit changed(idx);
         success = true;
     }
     else{
@@ -147,11 +172,11 @@ bool PartItem::setDefault(QString field_name, QVariant default_){
     return success;
 }
 
-int PartItem::getStructureSize(){
+int StructItem::getStructureSize(){
     return struct_size;
 }
 
-QVariant::Type PartItem::getType(int idx){
+QVariant::Type StructItem::getType(int idx){
     QVariant::Type ret = {};
     if (isValidIndex(idx)){
         ret = fields[idx].type();
